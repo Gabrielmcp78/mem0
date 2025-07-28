@@ -1,0 +1,50 @@
+FROM python:3.11-slim
+
+LABEL maintainer="Mem0 Team <team@mem0.ai>"
+LABEL version="1.0.0"
+LABEL description="Production-ready Mem0 container"
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PIP_NO_CACHE_DIR=1
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Create non-root user
+RUN groupadd -r mem0 && useradd -r -g mem0 mem0
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements first for better caching
+COPY requirements.txt pyproject.toml ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Install mem0 in production mode
+RUN pip install -e ".[production]"
+
+# Change ownership to non-root user
+RUN chown -R mem0:mem0 /app
+
+# Switch to non-root user
+USER mem0
+
+# Expose port
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Start application
+CMD ["gunicorn", "--config", "deployment/gunicorn.conf.py", "mem0.server:app"]

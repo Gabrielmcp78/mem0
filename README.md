@@ -3,11 +3,6 @@
     <img src="docs/images/banner-sm.png" width="800px" alt="Mem0 - The Memory Layer for Personalized AI">
   </a>
 </p>
-<p align="center" style="display: flex; justify-content: center; gap: 20px; align-items: center;">
-  <a href="https://trendshift.io/repositories/11194" target="blank">
-    <img src="https://trendshift.io/api/badge/repositories/11194" alt="mem0ai%2Fmem0 | Trendshift" width="250" height="55"/>
-  </a>
-</p>
 
 <p align="center">
   <a href="https://mem0.ai">Learn more</a>
@@ -85,17 +80,34 @@ Get up and running in minutes with automatic updates, analytics, and enterprise 
 
 ### Self-Hosted (Open Source)
 
-Install the sdk via pip:
+Install the SDK via pip:
 
 ```bash
 pip install mem0ai
 ```
 
-Install sdk via npm:
+Install SDK via npm:
 
 ```bash
-npm install 
+npm install mem0ai
 ```
+
+### Production Deployment
+
+For production environments, use our Docker-based deployment:
+
+```bash
+# Start production system
+./deployment/scripts/start-production.sh
+
+# Access services
+# Memory API: http://localhost:8000
+# Memory UI:  http://localhost:3000
+# Qdrant:     http://localhost:6333
+# Ollama:     http://localhost:11434
+```
+
+See [Deployment Guide](documentation/DEPLOYMENT.md) for detailed instructions.
 
 ### Basic Usage
 
@@ -146,14 +158,18 @@ For detailed integration steps, see the [Quickstart](https://docs.mem0.ai/quicks
 
 - **ChatGPT with Memory**: Personalized chat powered by Mem0 ([Live Demo](https://mem0.dev/demo))
 - **Browser Extension**: Store memories across ChatGPT, Perplexity, and Claude ([Chrome Extension](https://chromewebstore.google.com/detail/onihkkbipkfeijkadecaafbgagkhglop?utm_source=item-share-cb))
-- **Langgraph Support**: Build a customer bot with Langgraph + Mem0 ([Guide](https://docs.mem0.ai/integrations/langgraph))
-- **CrewAI Integration**: Tailor CrewAI outputs with Mem0 ([Example](https://docs.mem0.ai/integrations/crewai))
+- **Agent Frameworks**: AutoGen, CrewAI, LangChain integrations ([Guide](documentation/INTEGRATIONS.md))
+- **MCP Server**: Model Context Protocol integration ([Setup](integrations/mcp/))
+- **UI Components**: React dashboard and mobile app ([Components](integrations/ui/))
 
 ## 📚 Documentation & Support
 
-- Full docs: <https://docs.mem0.ai>
-- Community: [Discord](https://mem0.dev/DiG) · [Twitter](https://x.com/mem0ai)
-- Contact: <founders@mem0.ai>
+- **API Documentation**: [API Reference](documentation/api/)
+- **Deployment Guide**: [Production Setup](documentation/DEPLOYMENT.md)
+- **Integrations**: [Framework Integrations](documentation/INTEGRATIONS.md)
+- **Full Documentation**: <https://docs.mem0.ai>
+- **Community**: [Discord](https://mem0.dev/DiG) · [Twitter](https://x.com/mem0ai)
+- **Contact**: <founders@mem0.ai>
 
 ## Citation
 
