@@ -520,6 +520,281 @@ do {
     }
   }
 
+  async updateMemory(params) {
+    try {
+      const { memory_id, text, metadata = {} } = params;
+
+      if (!memory_id || !text) {
+        throw new Error('memory_id and text are required');
+      }
+
+      if (!this.qdrantClient) {
+        throw new Error('Memory update not available - Qdrant not connected');
+      }
+
+      // Generate new embedding for updated text
+      const embedding = await this.processWithAppleIntelligence(text, 'embed');
+
+      // Get existing memory to preserve original metadata
+      const existingPoint = await this.qdrantClient.retrieve(this.collectionName, {
+        ids: [memory_id],
+        with_payload: true,
+      });
+
+      if (!existingPoint || existingPoint.length === 0) {
+        throw new Error(`Memory with ID ${memory_id} not found`);
+      }
+
+      const existingPayload = existingPoint[0].payload;
+      const timestamp = new Date().toISOString();
+
+      // Update memory data
+      const updatedMemoryData = {
+        ...existingPayload,
+        content: text,
+        metadata: {
+          ...existingPayload.metadata,
+          ...metadata,
+          updated_at: timestamp,
+          processed_by: 'apple_intelligence_native',
+          hash: crypto.createHash('md5').update(text).digest('hex'),
+        },
+      };
+
+      // Update in Qdrant
+      await this.qdrantClient.upsert(this.collectionName, {
+        wait: true,
+        points: [{
+          id: memory_id,
+          vector: embedding,
+          payload: updatedMemoryData,
+        }],
+      });
+
+      return {
+        success: true,
+        memory_id,
+        updated_content: text,
+        timestamp,
+        processed_by: 'apple_intelligence_native',
+      };
+
+    } catch (error) {
+      throw new Error(`Failed to update memory: ${error.message}`);
+    }
+  }
+
+  async deleteMemory(params) {
+    try {
+      const { memory_id, user_id = 'gabriel' } = params;
+
+      if (!memory_id) {
+        throw new Error('memory_id is required');
+      }
+
+      if (!this.qdrantClient) {
+        throw new Error('Memory deletion not available - Qdrant not connected');
+      }
+
+      // Verify memory exists and belongs to user
+      const existingPoint = await this.qdrantClient.retrieve(this.collectionName, {
+        ids: [memory_id],
+        with_payload: true,
+      });
+
+      if (!existingPoint || existingPoint.length === 0) {
+        throw new Error(`Memory with ID ${memory_id} not found`);
+      }
+
+      const memoryPayload = existingPoint[0].payload;
+      if (memoryPayload.user_id !== user_id) {
+        throw new Error(`Memory ${memory_id} does not belong to user ${user_id}`);
+      }
+
+      // Delete from Qdrant
+      await this.qdrantClient.delete(this.collectionName, {
+        wait: true,
+        points: [memory_id],
+      });
+
+      return {
+        success: true,
+        memory_id,
+        deleted_at: new Date().toISOString(),
+        user_id,
+        processed_by: 'apple_intelligence_native',
+      };
+
+    } catch (error) {
+      throw new Error(`Failed to delete memory: ${error.message}`);
+    }
+  }
+
+  async getMemoryById(params) {
+    try {
+      const { memory_id } = params;
+
+      if (!memory_id) {
+        throw new Error('memory_id is required');
+      }
+
+      if (!this.qdrantClient) {
+        throw new Error('Memory retrieval not available - Qdrant not connected');
+      }
+
+      // Retrieve specific memory
+      const result = await this.qdrantClient.retrieve(this.collectionName, {
+        ids: [memory_id],
+        with_payload: true,
+      });
+
+      if (!result || result.length === 0) {
+        throw new Error(`Memory with ID ${memory_id} not found`);
+      }
+
+      const point = result[0];
+      return {
+        success: true,
+        memory: {
+          id: point.id,
+          content: point.payload.content,
+          metadata: point.payload.metadata,
+          user_id: point.payload.user_id,
+          agent_id: point.payload.agent_id,
+          run_id: point.payload.run_id,
+        },
+        processed_by: 'apple_intelligence_native',
+      };
+
+    } catch (error) {
+      throw new Error(`Failed to get memory by ID: ${error.message}`);
+    }
+  }
+
+  async getMemoryHistory(params) {
+    try {
+      const { user_id = 'gabriel', days = 30 } = params;
+
+      if (!this.qdrantClient) {
+        throw new Error('Memory history not available - Qdrant not connected');
+      }
+
+      // Calculate date threshold
+      const dateThreshold = new Date();
+      dateThreshold.setDate(dateThreshold.getDate() - days);
+      const thresholdISO = dateThreshold.toISOString();
+
+      // Get all memories for user
+      const scrollResult = await this.qdrantClient.scroll(this.collectionName, {
+        filter: {
+          must: [{ key: 'user_id', match: { value: user_id } }],
+        },
+        limit: 1000,
+        with_payload: true,
+      });
+
+      // Filter by date and analyze
+      const recentMemories = scrollResult.points.filter(point => {
+        const createdAt = point.payload.metadata?.created_at;
+        return createdAt && createdAt >= thresholdISO;
+      });
+
+      // Group by agent and date
+      const agentStats = {};
+      const dailyStats = {};
+
+      recentMemories.forEach(point => {
+        const agentId = point.payload.agent_id || 'unknown';
+        const createdAt = point.payload.metadata?.created_at;
+        const date = createdAt ? createdAt.split('T')[0] : 'unknown';
+
+        // Agent statistics
+        if (!agentStats[agentId]) {
+          agentStats[agentId] = { count: 0, latest: null };
+        }
+        agentStats[agentId].count++;
+        if (!agentStats[agentId].latest || createdAt > agentStats[agentId].latest) {
+          agentStats[agentId].latest = createdAt;
+        }
+
+        // Daily statistics
+        if (!dailyStats[date]) {
+          dailyStats[date] = 0;
+        }
+        dailyStats[date]++;
+      });
+
+      return {
+        success: true,
+        user_id,
+        period_days: days,
+        total_memories: recentMemories.length,
+        agent_statistics: agentStats,
+        daily_statistics: dailyStats,
+        date_range: {
+          from: thresholdISO,
+          to: new Date().toISOString(),
+        },
+        processed_by: 'apple_intelligence_native',
+      };
+
+    } catch (error) {
+      throw new Error(`Failed to get memory history: ${error.message}`);
+    }
+  }
+
+  async clearMemories(params) {
+    try {
+      const { user_id = 'gabriel', confirm } = params;
+
+      if (!confirm) {
+        throw new Error('Confirmation required - set confirm: true to proceed');
+      }
+
+      if (!this.qdrantClient) {
+        throw new Error('Memory clearing not available - Qdrant not connected');
+      }
+
+      // Get all memory IDs for user
+      const scrollResult = await this.qdrantClient.scroll(this.collectionName, {
+        filter: {
+          must: [{ key: 'user_id', match: { value: user_id } }],
+        },
+        limit: 10000,
+        with_payload: false,
+      });
+
+      const memoryIds = scrollResult.points.map(point => point.id);
+
+      if (memoryIds.length === 0) {
+        return {
+          success: true,
+          message: `No memories found for user ${user_id}`,
+          cleared_count: 0,
+          user_id,
+        };
+      }
+
+      // Delete all memories
+      await this.qdrantClient.delete(this.collectionName, {
+        wait: true,
+        points: memoryIds,
+      });
+
+      return {
+        success: true,
+        message: `Cleared ${memoryIds.length} memories for user ${user_id}`,
+        cleared_count: memoryIds.length,
+        user_id,
+        cleared_at: new Date().toISOString(),
+        processed_by: 'apple_intelligence_native',
+      };
+
+    } catch (error) {
+      throw new Error(`Failed to clear memories: ${error.message}`);
+    }
+  }
+
   async testConnection() {
     const status = {
       server: 'gabriel-apple-intelligence-memory-native',
@@ -652,6 +927,99 @@ do {
               },
             },
           },
+          {
+            name: 'update_memory',
+            description: 'Update an existing memory with new content',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                memory_id: {
+                  type: 'string',
+                  description: 'ID of the memory to update',
+                },
+                text: {
+                  type: 'string',
+                  description: 'New content for the memory',
+                },
+                metadata: {
+                  type: 'object',
+                  description: 'Additional metadata to update',
+                },
+              },
+              required: ['memory_id', 'text'],
+            },
+          },
+          {
+            name: 'delete_memory',
+            description: 'Delete a specific memory by ID',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                memory_id: {
+                  type: 'string',
+                  description: 'ID of the memory to delete',
+                },
+                user_id: {
+                  type: 'string',
+                  description: 'User identifier for verification',
+                  default: 'gabriel',
+                },
+              },
+              required: ['memory_id'],
+            },
+          },
+          {
+            name: 'get_memory_by_id',
+            description: 'Retrieve a specific memory by its ID',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                memory_id: {
+                  type: 'string',
+                  description: 'ID of the memory to retrieve',
+                },
+              },
+              required: ['memory_id'],
+            },
+          },
+          {
+            name: 'get_memory_history',
+            description: 'Get memory history and statistics for a user',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                user_id: {
+                  type: 'string',
+                  description: 'User identifier',
+                  default: 'gabriel',
+                },
+                days: {
+                  type: 'number',
+                  description: 'Number of days to look back',
+                  default: 30,
+                },
+              },
+            },
+          },
+          {
+            name: 'clear_memories',
+            description: 'Clear all memories for a user (use with caution)',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                user_id: {
+                  type: 'string',
+                  description: 'User identifier',
+                  default: 'gabriel',
+                },
+                confirm: {
+                  type: 'boolean',
+                  description: 'Confirmation flag - must be true to proceed',
+                },
+              },
+              required: ['confirm'],
+            },
+          },
         ],
       };
     });
@@ -675,6 +1043,21 @@ do {
           case 'get_all_memories':
             result = await this.getAllMemories(args);
             break;
+          case 'update_memory':
+            result = await this.updateMemory(args);
+            break;
+          case 'delete_memory':
+            result = await this.deleteMemory(args);
+            break;
+          case 'get_memory_by_id':
+            result = await this.getMemoryById(args);
+            break;
+          case 'get_memory_history':
+            result = await this.getMemoryHistory(args);
+            break;
+          case 'clear_memories':
+            result = await this.clearMemories(args);
+            break;
           default:
             throw new Error(`Unknown operation: ${name}`);
         }
@@ -697,10 +1080,124 @@ do {
     });
   }
 
+  // Health monitoring and self-healing
+  setupHealthMonitoring() {
+    // Health check endpoint
+    this.healthStatus = {
+      server: 'healthy',
+      qdrant: 'unknown',
+      apple_intelligence: 'unknown',
+      last_check: new Date().toISOString(),
+      uptime: process.uptime(),
+      memory_usage: process.memoryUsage(),
+    };
+
+    // Self-healing health checks every 30 seconds
+    setInterval(async () => {
+      try {
+        await this.performHealthCheck();
+      } catch (error) {
+        console.error('❌ Health check failed:', error.message);
+        await this.attemptSelfHeal();
+      }
+    }, 30000);
+
+    // Graceful shutdown handling
+    process.on('SIGTERM', () => this.gracefulShutdown('SIGTERM'));
+    process.on('SIGINT', () => this.gracefulShutdown('SIGINT'));
+    process.on('uncaughtException', (error) => {
+      console.error('💥 Uncaught exception:', error);
+      this.gracefulShutdown('uncaughtException');
+    });
+    process.on('unhandledRejection', (reason) => {
+      console.error('💥 Unhandled rejection:', reason);
+      this.gracefulShutdown('unhandledRejection');
+    });
+  }
+
+  async performHealthCheck() {
+    const startTime = Date.now();
+    
+    // Check Qdrant connection
+    if (this.qdrantClient) {
+      try {
+        await this.qdrantClient.getCollections();
+        this.healthStatus.qdrant = 'healthy';
+      } catch (error) {
+        this.healthStatus.qdrant = 'unhealthy';
+        throw new Error(`Qdrant unhealthy: ${error.message}`);
+      }
+    }
+
+    // Check Apple Intelligence
+    try {
+      const testEmbedding = await this.processWithAppleIntelligence('health check', 'embed');
+      this.healthStatus.apple_intelligence = testEmbedding ? 'healthy' : 'degraded';
+    } catch (error) {
+      this.healthStatus.apple_intelligence = 'unhealthy';
+      console.warn('⚠️ Apple Intelligence degraded:', error.message);
+    }
+
+    // Update health status
+    this.healthStatus.last_check = new Date().toISOString();
+    this.healthStatus.uptime = process.uptime();
+    this.healthStatus.memory_usage = process.memoryUsage();
+    this.healthStatus.response_time = Date.now() - startTime;
+
+    console.log(`✅ Health check passed (${this.healthStatus.response_time}ms)`);
+  }
+
+  async attemptSelfHeal() {
+    console.log('🔧 Attempting self-healing...');
+    
+    // Reconnect to Qdrant if needed
+    if (this.healthStatus.qdrant === 'unhealthy') {
+      try {
+        await this.setupConnections();
+        console.log('✅ Qdrant connection restored');
+      } catch (error) {
+        console.error('❌ Failed to restore Qdrant connection:', error.message);
+      }
+    }
+
+    // Force garbage collection if memory usage is high
+    const memUsage = process.memoryUsage();
+    if (memUsage.heapUsed > 100 * 1024 * 1024) { // 100MB
+      if (global.gc) {
+        global.gc();
+        console.log('🧹 Forced garbage collection');
+      }
+    }
+  }
+
+  async gracefulShutdown(signal) {
+    console.log(`🛑 Received ${signal}, shutting down gracefully...`);
+    
+    try {
+      // Close Qdrant connection
+      if (this.qdrantClient) {
+        // Qdrant client doesn't have explicit close method
+        this.qdrantClient = null;
+      }
+      
+      console.log('✅ Graceful shutdown completed');
+      process.exit(0);
+    } catch (error) {
+      console.error('❌ Error during shutdown:', error);
+      process.exit(1);
+    }
+  }
+
   async run() {
     const transport = new StdioServerTransport();
     await this.server.connect(transport, { checkCompatibility: false });
-    console.error('🍎 Native Node.js Apple Intelligence Memory MCP Server running');
+    
+    // Setup health monitoring
+    this.setupHealthMonitoring();
+    
+    console.error('🍎 Native Node.js Apple Intelligence Memory MCP Server running with self-healing');
+    console.error('📊 Health monitoring active (30s intervals)');
+    console.error('🔧 Self-healing enabled');
   }
 }
 
