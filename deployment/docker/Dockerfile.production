@@ -23,15 +23,14 @@ RUN apt-get update && apt-get install -y \
 # Set working directory
 WORKDIR /app
 
-# Copy requirements first for better caching
-COPY requirements.txt pyproject.toml ./
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy pyproject.toml first for better caching
+COPY pyproject.toml ./
 
 # Copy application code
 COPY . .
 
 # Install mem0 in production mode
-RUN pip install -e ".[production]"
+RUN pip install --no-cache-dir -e ".[production]"
 
 # Change ownership to non-root user
 RUN chown -R mem0:mem0 /app

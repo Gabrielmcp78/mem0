@@ -1,0 +1,394 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://mem0.ai/schemas/mcp-config-apple-intelligence.json",
+  "title": "Mem0 MCP Server Configuration with Apple Intelligence",
+  "description": "JSON schema for configuring the Mem0 MCP server with Apple Intelligence Foundation Models support in Claude Desktop",
+  "type": "object",
+  "properties": {
+    "mcpServers": {
+      "type": "object",
+      "description": "MCP servers configuration",
+      "properties": {
+        "gabriel-apple-intelligence-memory": {
+          "type": "object",
+          "description": "Mem0 memory server with Apple Intelligence Foundation Models",
+          "properties": {
+            "command": {
+              "type": "string",
+              "description": "Python executable command",
+              "default": "python",
+              "examples": ["python", "python3", "/usr/bin/python3"]
+            },
+            "args": {
+              "type": "array",
+              "description": "Arguments to pass to the server script",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "examples": [
+                ["/absolute/path/to/mem0/integrations/mcp/server.py"],
+                ["/absolute/path/to/mem0/integrations/mcp/server.js"],
+                ["/absolute/path/to/mem0/integrations/mcp/kiro_server.py"]
+              ]
+            },
+            "cwd": {
+              "type": "string",
+              "description": "Working directory for the server process (optional)",
+              "examples": ["/path/to/mem0/project"]
+            },
+            "env": {
+              "type": "object",
+              "description": "Environment variables for the Apple Intelligence server",
+              "properties": {
+                "QDRANT_URL": {
+                  "type": "string",
+                  "description": "Qdrant vector database URL (optional for Apple Intelligence)",
+                  "format": "uri",
+                  "default": "http://localhost:6333",
+                  "examples": [
+                    "http://localhost:6333",
+                    "https://your-qdrant-cluster.qdrant.io"
+                  ]
+                },
+                "QDRANT_API_KEY": {
+                  "type": "string",
+                  "description": "Qdrant API key (optional for local instances)",
+                  "examples": ["your-qdrant-api-key"]
+                },
+                "QDRANT_COLLECTION": {
+                  "type": "string",
+                  "description": "Qdrant collection name for Apple Intelligence memories",
+                  "default": "gabriel_apple_intelligence_memories",
+                  "pattern": "^[a-zA-Z0-9_-]+$",
+                  "examples": ["gabriel_apple_intelligence_memories", "claude_ai_memories"]
+                },
+                "APPLE_INTELLIGENCE_ENABLED": {
+                  "type": "string",
+                  "description": "Enable Apple Intelligence Foundation Models (auto-detects by default)",
+                  "default": "auto",
+                  "enum": ["true", "false", "auto"],
+                  "examples": ["true", "auto"]
+                },
+                "LOG_LEVEL": {
+                  "type": "string",
+                  "description": "Logging level for the server",
+                  "default": "INFO",
+                  "enum": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+                },
+                "PYTHONPATH": {
+                  "type": "string",
+                  "description": "Python path to include the mem0 project directory",
+                  "examples": ["/path/to/mem0/project"]
+                },
+                "OPENAI_API_KEY": {
+                  "type": "string",
+                  "description": "OpenAI API key (fallback when Apple Intelligence unavailable)",
+                  "pattern": "^sk-[a-zA-Z0-9]{48}$",
+                  "examples": ["sk-your-openai-api-key-here"]
+                },
+                "OLLAMA_URL": {
+                  "type": "string",
+                  "description": "Ollama server URL (fallback when Apple Intelligence unavailable)",
+                  "format": "uri",
+                  "default": "http://localhost:11434",
+                  "examples": ["http://localhost:11434"]
+                },
+                "OLLAMA_MODEL": {
+                  "type": "string",
+                  "description": "Ollama model name (fallback)",
+                  "default": "llama3.2:3b",
+                  "examples": ["llama3.2:3b", "llama3.2:7b"]
+                }
+              },
+              "additionalProperties": true
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Whether the MCP server is disabled",
+              "default": false
+            },
+            "alwaysAllow": {
+              "type": "array",
+              "description": "Tools that don't require user confirmation",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "test_connection",
+                  "add_memory",
+                  "search_memories",
+                  "get_all_memories",
+                  "update_memory",
+                  "delete_memory",
+                  "delete_all_memories",
+                  "get_memory_history"
+                ]
+              },
+              "uniqueItems": true,
+              "default": [
+                "test_connection",
+                "add_memory",
+                "search_memories",
+                "get_all_memories",
+                "update_memory",
+                "delete_memory",
+                "get_memory_history"
+              ],
+              "examples": [
+                ["test_connection", "add_memory", "search_memories"],
+                ["test_connection", "add_memory", "search_memories", "get_all_memories", "update_memory", "delete_memory", "get_memory_history"]
+              ]
+            },
+            "timeout": {
+              "type": "integer",
+              "description": "Request timeout in milliseconds",
+              "minimum": 5000,
+              "maximum": 120000,
+              "default": 30000,
+              "examples": [30000, 60000, 90000]
+            },
+            "persistent": {
+              "type": "boolean",
+              "description": "Keep the MCP server running persistently",
+              "default": true
+            },
+            "autoRestart": {
+              "type": "boolean",
+              "description": "Automatically restart the server if it fails",
+              "default": true
+            },
+            "maxRestarts": {
+              "type": "integer",
+              "description": "Maximum number of restart attempts",
+              "minimum": 1,
+              "maximum": 10,
+              "default": 5
+            },
+            "restartDelay": {
+              "type": "integer",
+              "description": "Delay between restart attempts in milliseconds",
+              "minimum": 1000,
+              "maximum": 10000,
+              "default": 2000
+            },
+            "initTimeout": {
+              "type": "integer",
+              "description": "Timeout for server initialization in milliseconds",
+              "minimum": 5000,
+              "maximum": 30000,
+              "default": 10000
+            },
+            "healthCheck": {
+              "type": "object",
+              "description": "Health check configuration",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Enable health checks",
+                  "default": true
+                },
+                "interval": {
+                  "type": "integer",
+                  "description": "Health check interval in milliseconds",
+                  "minimum": 10000,
+                  "maximum": 300000,
+                  "default": 30000
+                },
+                "timeout": {
+                  "type": "integer",
+                  "description": "Health check timeout in milliseconds",
+                  "minimum": 1000,
+                  "maximum": 10000,
+                  "default": 5000
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "required": ["command", "args"],
+          "additionalProperties": false
+        },
+        "mem0-memory-legacy": {
+          "type": "object",
+          "description": "Legacy Mem0 memory server configuration (for non-Apple Intelligence systems)",
+          "properties": {
+            "command": {
+              "type": "string",
+              "description": "Python executable command",
+              "default": "python3",
+              "examples": ["python3", "python", "/usr/bin/python3"]
+            },
+            "args": {
+              "type": "array",
+              "description": "Arguments to pass to the server script",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "examples": [
+                ["/absolute/path/to/mem0/integrations/mcp/server.py"]
+              ]
+            },
+            "env": {
+              "type": "object",
+              "description": "Environment variables for the legacy server",
+              "properties": {
+                "OPENAI_API_KEY": {
+                  "type": "string",
+                  "description": "OpenAI API key for LLM operations (required for legacy)",
+                  "pattern": "^sk-[a-zA-Z0-9]{48}$"
+                },
+                "QDRANT_URL": {
+                  "type": "string",
+                  "description": "Qdrant vector database URL",
+                  "format": "uri",
+                  "default": "http://localhost:6333"
+                },
+                "QDRANT_COLLECTION": {
+                  "type": "string",
+                  "description": "Qdrant collection name for storing memories",
+                  "default": "mem0_memories"
+                },
+                "OLLAMA_URL": {
+                  "type": "string",
+                  "description": "Ollama server URL for local LLM inference",
+                  "format": "uri",
+                  "default": "http://localhost:11434"
+                },
+                "OLLAMA_MODEL": {
+                  "type": "string",
+                  "description": "Ollama model name to use",
+                  "default": "llama3.2:3b"
+                },
+                "LOG_LEVEL": {
+                  "type": "string",
+                  "description": "Logging level for the server",
+                  "default": "INFO",
+                  "enum": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+                }
+              },
+              "anyOf": [
+                {"required": ["OPENAI_API_KEY"]},
+                {"required": ["OLLAMA_URL"]}
+              ],
+              "additionalProperties": true
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Whether the MCP server is disabled",
+              "default": false
+            },
+            "alwaysAllow": {
+              "type": "array",
+              "description": "Tools that don't require user confirmation",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "add_memory",
+                  "search_memories",
+                  "get_all_memories",
+                  "update_memory",
+                  "delete_memory",
+                  "delete_all_memories",
+                  "get_memory_history"
+                ]
+              },
+              "uniqueItems": true,
+              "default": ["add_memory", "search_memories", "get_all_memories"]
+            },
+            "timeout": {
+              "type": "integer",
+              "description": "Request timeout in milliseconds",
+              "minimum": 1000,
+              "maximum": 300000,
+              "default": 30000
+            }
+          },
+          "required": ["command", "args", "env"],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": {
+        "type": "object",
+        "description": "Additional MCP servers can be configured here"
+      }
+    }
+  },
+  "required": ["mcpServers"],
+  "additionalProperties": false,
+  "examples": [
+    {
+      "mcpServers": {
+        "gabriel-apple-intelligence-memory": {
+          "command": "python",
+          "args": ["/Volumes/Ready500/DEVELOPMENT/mem0/integrations/mcp/server.py"],
+          "env": {
+            "QDRANT_URL": "http://localhost:6333",
+            "QDRANT_COLLECTION": "gabriel_apple_intelligence_memories",
+            "APPLE_INTELLIGENCE_ENABLED": "true",
+            "LOG_LEVEL": "INFO",
+            "PYTHONPATH": "/Volumes/Ready500/DEVELOPMENT/mem0"
+          },
+          "disabled": false,
+          "persistent": true,
+          "autoRestart": true,
+          "maxRestarts": 5,
+          "restartDelay": 2000,
+          "alwaysAllow": [
+            "test_connection",
+            "add_memory",
+            "search_memories",
+            "get_all_memories",
+            "update_memory",
+            "delete_memory",
+            "get_memory_history"
+          ],
+          "timeout": 30000,
+          "initTimeout": 10000,
+          "healthCheck": {
+            "enabled": true,
+            "interval": 30000,
+            "timeout": 5000
+          }
+        }
+      }
+    },
+    {
+      "mcpServers": {
+        "gabriel-apple-intelligence-memory": {
+          "command": "python",
+          "args": ["/path/to/mem0/integrations/mcp/server.py"],
+          "env": {
+            "QDRANT_URL": "https://your-qdrant-cluster.qdrant.io",
+            "QDRANT_API_KEY": "your-qdrant-api-key",
+            "QDRANT_COLLECTION": "production_apple_intelligence_memories",
+            "APPLE_INTELLIGENCE_ENABLED": "auto",
+            "LOG_LEVEL": "INFO",
+            "OPENAI_API_KEY": "sk-fallback-key-here"
+          },
+          "disabled": false,
+          "persistent": true,
+          "autoRestart": true,
+          "maxRestarts": 3,
+          "restartDelay": 3000,
+          "alwaysAllow": [
+            "test_connection",
+            "add_memory",
+            "search_memories",
+            "get_all_memories",
+            "update_memory",
+            "delete_memory",
+            "get_memory_history"
+          ],
+          "timeout": 30000,
+          "initTimeout": 15000,
+          "healthCheck": {
+            "enabled": true,
+            "interval": 60000,
+            "timeout": 10000
+          }
+        }
+      }
+    }
+  ]
+}

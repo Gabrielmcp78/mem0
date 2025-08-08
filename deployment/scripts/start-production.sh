@@ -31,7 +31,7 @@ sleep 10
 echo "🔍 Performing health checks..."
 
 # Check Qdrant
-if curl -s http://localhost:6333/health > /dev/null; then
+if curl -s http://localhost:10333/health > /dev/null; then
     echo "✅ Qdrant is healthy"
 else
     echo "⚠️  Qdrant health check failed"
@@ -45,7 +45,7 @@ else
 fi
 
 # Check Memory API
-if curl -s http://localhost:8000/health > /dev/null; then
+if curl -s http://localhost:10000/health > /dev/null; then
     echo "✅ Memory API is healthy"
 else
     echo "⚠️  Memory API health check failed"
@@ -55,10 +55,10 @@ echo ""
 echo "🎉 Mem0 Production System Started Successfully!"
 echo ""
 echo "📊 Service URLs:"
-echo "   Memory API: http://localhost:8000"
-echo "   Memory UI:  http://localhost:3000"
-echo "   Qdrant:     http://localhost:6333"
-echo "   Ollama:     http://localhost:11434"
+echo "   Memory API: http://localhost:10000"
+echo "   Memory UI:  http://localhost:10300"
+echo "   Qdrant:     http://localhost:10333"
+echo "   Ollama:     http://localhost:10434"
 echo ""
 echo "📝 Logs: docker compose -f deployment/docker/docker-compose.production.yml logs -f"
 echo "🛑 Stop:  ./deployment/scripts/stop-production.sh"

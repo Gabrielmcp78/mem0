@@ -24,6 +24,7 @@ class EmbedderConfig(BaseModel):
             "lmstudio",
             "langchain",
             "aws_bedrock",
+            "apple_intelligence",
         ]:
             return v
         else:

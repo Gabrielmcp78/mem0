@@ -127,11 +127,12 @@ class MemoryClient:
             raise ValueError(f"Error: {error_message}")
 
     @api_error_handler
-    def add(self, messages: List[Dict[str, str]], **kwargs) -> Dict[str, Any]:
+    def add(self, messages: List[Dict[str, str]], user_request: str, **kwargs) -> Dict[str, Any]:
         """Add a new memory.
 
         Args:
             messages: A list of message dictionaries.
+            user_request: The user's request.
             **kwargs: Additional parameters such as user_id, agent_id, app_id,
                       metadata, filters.
 
@@ -141,6 +142,15 @@ class MemoryClient:
         Raises:
             APIError: If the API request fails.
         """
+        # Call Apple Intelligence with user_request and get JSON output
+        # json_output = apple_intelligence_api.generate_json(user_request)
+
+        # Create a message dictionary with the JSON output
+        # message = {"text": json_output}
+
+        # Append the message to the messages list
+        # messages.append(message)
+
         kwargs = self._prepare_params(kwargs)
         if kwargs.get("output_format") != "v1.1":
             kwargs["output_format"] = "v1.1"

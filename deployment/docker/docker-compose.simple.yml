@@ -11,7 +11,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "25432:5432"
+      - "10432:5432"
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U mem0 -d mem0"]
@@ -30,7 +30,7 @@ services:
     volumes:
       - redis_data:/data
     ports:
-      - "26379:6379"
+      - "10379:6379"
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -41,8 +41,8 @@ services:
   qdrant:
     image: qdrant/qdrant:v1.7.4
     ports:
-      - "26333:6333"
-      - "26334:6334"
+      - "10333:6333"
+      - "10334:6334"
     volumes:
       - qdrant_data:/qdrant/storage
     environment:

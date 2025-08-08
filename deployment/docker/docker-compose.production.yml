@@ -6,7 +6,7 @@ services:
       context: ../..
       dockerfile: deployment/docker/Dockerfile.production
     ports:
-      - "8000:8000"
+      - "10000:8000"
     environment:
       - POSTGRES_URL=postgresql://mem0:${POSTGRES_PASSWORD}@postgres:5432/mem0
       - REDIS_URL=redis://redis:6379
@@ -87,8 +87,8 @@ services:
   qdrant:
     image: qdrant/qdrant:v1.7.4
     ports:
-      - "6333:6333"
-      - "6334:6334"
+      - "10333:6333"
+      - "10334:6334"
     volumes:
       - qdrant_data:/qdrant/storage
       - ./qdrant/config.yaml:/qdrant/config/production.yaml:ro
@@ -133,7 +133,7 @@ services:
   prometheus:
     image: prom/prometheus:latest
     ports:
-      - "9090:9090"
+      - "10090:9090"
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
@@ -149,7 +149,7 @@ services:
   grafana:
     image: grafana/grafana:latest
     ports:
-      - "3000:3000"
+      - "10300:3000"
     volumes:
       - grafana_data:/var/lib/grafana
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro

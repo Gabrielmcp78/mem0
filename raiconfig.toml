@@ -1,0 +1,9 @@
+
+[profile.Gabriel]
+authenticator = "externalbrowser"
+platform = "snowflake"
+account = ""
+user = ""
+rai_app_name = ""
+role = ""
+warehouse = ""

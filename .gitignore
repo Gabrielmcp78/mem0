@@ -252,3 +252,4 @@ archive/**/*
 
 # Cleanup plan (temporary)
 CLEANUP_PLAN.md
+.early.coverage

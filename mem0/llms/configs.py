@@ -28,6 +28,7 @@ class LlmConfig(BaseModel):
             "lmstudio",
             "vllm",
             "langchain",
+            "apple_intelligence",
         ):
             return v
         else:

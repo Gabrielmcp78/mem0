@@ -1,0 +1,54 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "Mem0 Apple Intelligence Integration",
+  "description": "Complete Apple Intelligence integration for mem0 memory framework with MCP server support, persistent database connections, and interactive knowledge graph visualization",
+  "folders": [
+    "integrations/mcp",
+    "mem0/llms/apple_intelligence.py",
+    "mem0/embeddings/apple_intelligence.py",
+    "mem0/configs/llms/apple_intelligence.py",
+    "mem0/configs/embeddings/apple_intelligence.py",
+    "mem0/utils/apple_intelligence.py"
+  ],
+  "excludeFolders": [
+    "node_modules",
+    "__pycache__",
+    ".git",
+    ".pytest_cache",
+    "build",
+    "dist",
+    ".venv",
+    "venv"
+  ],
+  "excludeFiles": [
+    "*.pyc",
+    "*.pyo",
+    "*.log",
+    ".DS_Store",
+    "*.tmp"
+  ],
+  "rules": [
+    "Always use Apple Intelligence Foundation Models for local on-device processing",
+    "Implement persistent database connections with automatic reconnection and health monitoring",
+    "Use Qdrant as the primary vector database with graceful fallbacks to in-memory storage",
+    "Implement proper MCP protocol compliance with structured tool registration",
+    "Ensure all Apple Intelligence operations occur locally with no external API calls",
+    "Use the unified MCP server (simple_mcp_server.py) for all Claude Desktop integrations",
+    "Test Apple Intelligence availability before initializing memory operations",
+    "Always provide fallback configurations when Apple Intelligence is unavailable"
+  ],
+  "previousVersions": [
+    {
+      "tag": "v1.0.0",
+      "title": "Initial Apple Intelligence Integration"
+    },
+    {
+      "tag": "v1.1.0", 
+      "title": "MCP Server with Persistent Connections"
+    },
+    {
+      "tag": "v1.2.0",
+      "title": "Knowledge Graph Visualization UI"
+    }
+  ]
+}

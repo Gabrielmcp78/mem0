@@ -156,10 +156,11 @@ For detailed integration steps, see the [Quickstart](https://docs.mem0.ai/quicks
 
 ## 🔗 Integrations & Demos
 
+- **🍎 Apple Intelligence**: Complete local processing with Foundation Models ([Setup Guide](integrations/mcp/README.md))
 - **ChatGPT with Memory**: Personalized chat powered by Mem0 ([Live Demo](https://mem0.dev/demo))
 - **Browser Extension**: Store memories across ChatGPT, Perplexity, and Claude ([Chrome Extension](https://chromewebstore.google.com/detail/onihkkbipkfeijkadecaafbgagkhglop?utm_source=item-share-cb))
 - **Agent Frameworks**: AutoGen, CrewAI, LangChain integrations ([Guide](documentation/INTEGRATIONS.md))
-- **MCP Server**: Model Context Protocol integration ([Setup](integrations/mcp/))
+- **MCP Server**: Model Context Protocol integration with Apple Intelligence ([Setup](integrations/mcp/))
 - **UI Components**: React dashboard and mobile app ([Components](integrations/ui/))
 
 ## 📚 Documentation & Support

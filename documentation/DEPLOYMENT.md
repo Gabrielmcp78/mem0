@@ -5,6 +5,7 @@ Complete guide for deploying Mem0 in production environments.
 ## 🚀 Production Setup
 
 ### Prerequisites
+
 - Python 3.8+
 - Docker & Docker Compose
 - PostgreSQL or compatible database
@@ -12,6 +13,7 @@ Complete guide for deploying Mem0 in production environments.
 - Vector database (Qdrant, Pinecone, or Chroma)
 
 ### Environment Configuration
+
 ```bash
 # .env.production
 OPENAI_API_KEY=your_openai_api_key
@@ -23,6 +25,7 @@ LOG_LEVEL=INFO
 ```
 
 ### Production Installation
+
 ```bash
 # Clone repository
 git clone https://github.com/mem0ai/mem0.git
@@ -44,6 +47,7 @@ gunicorn --config gunicorn.conf.py mem0.server:app
 ## 🐳 Docker Deployment
 
 ### Single Container
+
 ```dockerfile
 # Dockerfile.production
 FROM python:3.11-slim
@@ -78,9 +82,10 @@ CMD ["gunicorn", "--config", "gunicorn.conf.py", "mem0.server:app"]
 ```
 
 ### Docker Compose Production Stack
+
 ```yaml
 # docker-compose.production.yml
-version: '3.8'
+version: "3.8"
 
 services:
   mem0-api:
@@ -164,6 +169,7 @@ volumes:
 ```
 
 ### Nginx Configuration
+
 ```nginx
 # deployment/nginx/nginx.conf
 events {
@@ -207,6 +213,7 @@ http {
 ## ☸️ Kubernetes Deployment
 
 ### Namespace
+
 ```yaml
 # k8s/namespace.yaml
 apiVersion: v1
@@ -216,6 +223,7 @@ metadata:
 ```
 
 ### ConfigMap
+
 ```yaml
 # k8s/configmap.yaml
 apiVersion: v1
@@ -232,6 +240,7 @@ data:
 ```
 
 ### Secrets
+
 ```yaml
 # k8s/secrets.yaml
 apiVersion: v1
@@ -246,6 +255,7 @@ data:
 ```
 
 ### Deployment
+
 ```yaml
 # k8s/deployment.yaml
 apiVersion: apps/v1
@@ -264,37 +274,38 @@ spec:
         app: mem0-api
     spec:
       containers:
-      - name: mem0-api
-        image: mem0/mem0:latest
-        ports:
-        - containerPort: 8000
-        envFrom:
-        - configMapRef:
-            name: mem0-config
-        - secretRef:
-            name: mem0-secrets
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 8000
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
+        - name: mem0-api
+          image: mem0/mem0:latest
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: mem0-config
+            - secretRef:
+                name: mem0-secrets
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
 ```
 
 ### Service
+
 ```yaml
 # k8s/service.yaml
 apiVersion: v1
@@ -306,13 +317,14 @@ spec:
   selector:
     app: mem0-api
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 8000
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
   type: ClusterIP
 ```
 
 ### Ingress
+
 ```yaml
 # k8s/ingress.yaml
 apiVersion: networking.k8s.io/v1
@@ -325,25 +337,26 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   tls:
-  - hosts:
-    - api.mem0.yourdomain.com
-    secretName: mem0-tls
+    - hosts:
+        - api.mem0.yourdomain.com
+      secretName: mem0-tls
   rules:
-  - host: api.mem0.yourdomain.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: mem0-api-service
-            port:
-              number: 80
+    - host: api.mem0.yourdomain.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: mem0-api-service
+                port:
+                  number: 80
 ```
 
 ## 📊 Scaling Considerations
 
 ### Horizontal Pod Autoscaler
+
 ```yaml
 # k8s/hpa.yaml
 apiVersion: autoscaling/v2
@@ -359,21 +372,22 @@ spec:
   minReplicas: 3
   maxReplicas: 10
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
 ```
 
 ### Database Scaling
+
 ```yaml
 # k8s/postgres-cluster.yaml
 apiVersion: postgresql.cnpg.io/v1
@@ -383,24 +397,24 @@ metadata:
   namespace: mem0
 spec:
   instances: 3
-  
+
   postgresql:
     parameters:
       max_connections: "200"
       shared_buffers: "256MB"
       effective_cache_size: "1GB"
-      
+
   bootstrap:
     initdb:
       database: mem0
       owner: mem0
       secret:
         name: postgres-credentials
-        
+
   storage:
     size: 100Gi
     storageClass: fast-ssd
-    
+
   monitoring:
     enabled: true
 ```
@@ -408,6 +422,7 @@ spec:
 ## 🔧 Configuration Management
 
 ### Production Configuration
+
 ```python
 # config/production.py
 import os
@@ -417,7 +432,7 @@ class ProductionConfig(BaseConfig):
     # Database
     POSTGRES_URL = os.getenv('POSTGRES_URL')
     REDIS_URL = os.getenv('REDIS_URL')
-    
+
     # Vector Store
     VECTOR_STORE = {
         'provider': 'qdrant',
@@ -427,7 +442,7 @@ class ProductionConfig(BaseConfig):
             'collection_name': 'mem0_vectors'
         }
     }
-    
+
     # LLM
     LLM = {
         'provider': 'openai',
@@ -436,7 +451,7 @@ class ProductionConfig(BaseConfig):
             'model': 'gpt-4o-mini'
         }
     }
-    
+
     # Embeddings
     EMBEDDINGS = {
         'provider': 'openai',
@@ -445,20 +460,20 @@ class ProductionConfig(BaseConfig):
             'model': 'text-embedding-3-small'
         }
     }
-    
+
     # Security
     SECRET_KEY = os.getenv('SECRET_KEY')
     JWT_SECRET = os.getenv('JWT_SECRET')
-    
+
     # Logging
     LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
     LOG_FORMAT = 'json'
-    
+
     # Performance
     CACHE_TTL = 3600
     MAX_MEMORY_SIZE = 1000000
     BATCH_SIZE = 100
-    
+
     # Rate Limiting
     RATE_LIMIT = {
         'requests_per_minute': 1000,
@@ -467,6 +482,7 @@ class ProductionConfig(BaseConfig):
 ```
 
 ### Gunicorn Configuration
+
 ```python
 # gunicorn.conf.py
 import multiprocessing
@@ -513,6 +529,7 @@ graceful_timeout = 30
 ## 📈 Monitoring & Observability
 
 ### Prometheus Metrics
+
 ```python
 # monitoring/metrics.py
 from prometheus_client import Counter, Histogram, Gauge
@@ -527,23 +544,24 @@ memory_count = Gauge('mem0_memory_count_total', 'Total number of memories')
 class MetricsMiddleware:
     def __init__(self, app):
         self.app = app
-    
+
     async def __call__(self, scope, receive, send):
         if scope["type"] == "http":
             start_time = time.time()
-            
+
             # Process request
             await self.app(scope, receive, send)
-            
+
             # Record metrics
             duration = time.time() - start_time
             memory_search_duration.observe(duration)
-            
+
         else:
             await self.app(scope, receive, send)
 ```
 
 ### Health Checks
+
 ```python
 # health/checks.py
 from mem0 import Memory
@@ -552,7 +570,7 @@ import asyncio
 class HealthChecker:
     def __init__(self):
         self.memory = Memory()
-    
+
     async def check_database(self):
         try:
             # Test database connection
@@ -560,7 +578,7 @@ class HealthChecker:
             return {"status": "healthy", "latency": "< 10ms"}
         except Exception as e:
             return {"status": "unhealthy", "error": str(e)}
-    
+
     async def check_vector_store(self):
         try:
             # Test vector store connection
@@ -568,7 +586,7 @@ class HealthChecker:
             return {"status": "healthy", "collections": result}
         except Exception as e:
             return {"status": "unhealthy", "error": str(e)}
-    
+
     async def check_llm(self):
         try:
             # Test LLM connection
@@ -576,7 +594,7 @@ class HealthChecker:
             return {"status": "healthy", "model": self.memory.llm.model}
         except Exception as e:
             return {"status": "unhealthy", "error": str(e)}
-    
+
     async def full_health_check(self):
         checks = await asyncio.gather(
             self.check_database(),
@@ -584,7 +602,7 @@ class HealthChecker:
             self.check_llm(),
             return_exceptions=True
         )
-        
+
         return {
             "database": checks[0],
             "vector_store": checks[1],
@@ -596,6 +614,7 @@ class HealthChecker:
 ## 🔒 Security Best Practices
 
 ### API Security
+
 ```python
 # security/auth.py
 from fastapi import HTTPException, Depends
@@ -631,6 +650,7 @@ async def add_memory(request: Request, memory_data: dict, user=Depends(verify_to
 ```
 
 ### Data Encryption
+
 ```python
 # security/encryption.py
 from cryptography.fernet import Fernet
@@ -642,10 +662,10 @@ class DataEncryption:
         if not key:
             key = Fernet.generate_key()
         self.cipher = Fernet(key)
-    
+
     def encrypt(self, data: str) -> str:
         return self.cipher.encrypt(data.encode()).decode()
-    
+
     def decrypt(self, encrypted_data: str) -> str:
         return self.cipher.decrypt(encrypted_data.encode()).decode()
 ```
@@ -653,6 +673,7 @@ class DataEncryption:
 ## 🚨 Disaster Recovery
 
 ### Backup Strategy
+
 ```bash
 #!/bin/bash
 # backup.sh
@@ -668,6 +689,7 @@ aws s3 sync backups/ s3://mem0-backups/$(date +%Y%m%d)/
 ```
 
 ### Recovery Procedures
+
 ```bash
 #!/bin/bash
 # restore.sh
@@ -684,6 +706,7 @@ curl -X PUT "$QDRANT_URL/collections/mem0_vectors/snapshots/recover" \
 ## 📋 Deployment Checklist
 
 ### Pre-deployment
+
 - [ ] Environment variables configured
 - [ ] Database migrations applied
 - [ ] SSL certificates installed
@@ -693,6 +716,7 @@ curl -X PUT "$QDRANT_URL/collections/mem0_vectors/snapshots/recover" \
 - [ ] Security audit passed
 
 ### Post-deployment
+
 - [ ] Health checks passing
 - [ ] Metrics collecting
 - [ ] Logs aggregating
@@ -701,6 +725,7 @@ curl -X PUT "$QDRANT_URL/collections/mem0_vectors/snapshots/recover" \
 - [ ] Team notified
 
 ### Rollback Plan
+
 - [ ] Previous version tagged
 - [ ] Database rollback scripts ready
 - [ ] Traffic routing plan
