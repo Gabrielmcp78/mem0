@@ -1,0 +1,39 @@
+{
+  "vector_store": {
+    "provider": "qdrant",
+    "config": {
+      "collection_name": "gabriel_apple_intelligence_memories",
+      "host": "localhost",
+      "port": 6333,
+      "embedding_model_dims": 1536,
+      "distance": "cosine"
+    }
+  },
+  "graph_store": {
+    "provider": "neo4j",
+    "config": {
+      "url": "bolt://localhost:7687",
+      "username": "neo4j",
+      "password": "password",
+      "database": "neo4j"
+    }
+  },
+  "llm": {
+    "provider": "openai",
+    "config": {
+      "model": "gpt-4o-mini",
+      "temperature": 0.1,
+      "max_tokens": 2000
+    }
+  },
+  "embedder": {
+    "provider": "openai", 
+    "config": {
+      "model": "text-embedding-3-small",
+      "embedding_dims": 1536
+    }
+  },
+  "history_db_path": "./mem0_history.db",
+  "custom_fact_extraction_prompt": "Extract key facts, entities, and relationships from the following text. Focus on actionable information, important details, and connections between concepts.",
+  "version": "v1.1"
+}

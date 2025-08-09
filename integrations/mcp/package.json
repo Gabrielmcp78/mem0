@@ -10,7 +10,11 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.1",
-    "child_process": "^1.0.2"
+    "@qdrant/js-client-rest": "^1.15.0",
+    "better-sqlite3": "^12.2.0",
+    "child_process": "^1.0.2",
+    "neo4j-driver": "^5.28.1",
+    "uuid": "^11.1.0"
   },
   "keywords": [
     "mcp",
