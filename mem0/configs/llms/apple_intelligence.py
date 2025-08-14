@@ -1,7 +1,7 @@
 """
-Apple Intelligence LLM Configuration
+FoundationModels LLM Configuration
 
-This module provides configuration classes for Apple Intelligence LLM provider.
+This module provides configuration classes for FoundationModels LLM provider.
 """
 
 from typing import Optional
@@ -10,9 +10,9 @@ from mem0.configs.llms.base import BaseLlmConfig
 
 class AppleIntelligenceLlmConfig(BaseLlmConfig):
     """
-    Configuration class for Apple Intelligence LLM provider
+    Configuration class for FoundationModels LLM provider
     
-    This class extends BaseLlmConfig with Apple Intelligence specific options
+    This class extends BaseLlmConfig with FoundationModels specific options
     for Foundation Models integration.
     """
     
@@ -30,17 +30,17 @@ class AppleIntelligenceLlmConfig(BaseLlmConfig):
         **kwargs
     ):
         """
-        Initialize Apple Intelligence LLM configuration
+        Initialize FoundationModels LLM configuration
         
         Args:
-            model: Apple Intelligence model identifier
+            model: FoundationModels model identifier
             temperature: Controls randomness (0.0-1.0), lower values are more deterministic
             max_tokens: Maximum tokens to generate
             top_p: Nucleus sampling parameter (0.0-1.0)
             top_k: Top-k sampling parameter
             enable_neural_engine: Whether to use Neural Engine optimization
             privacy_mode: Privacy level (strict, moderate, open)
-            fallback_provider: Fallback provider if Apple Intelligence unavailable
+            fallback_provider: Fallback provider if FoundationModels unavailable
             foundation_model_version: Specific Foundation Models version to use
             **kwargs: Additional configuration options passed to BaseLlmConfig
         """
@@ -53,7 +53,7 @@ class AppleIntelligenceLlmConfig(BaseLlmConfig):
             **kwargs
         )
         
-        # Apple Intelligence specific configuration
+        # FoundationModels specific configuration
         self.enable_neural_engine = enable_neural_engine
         self.privacy_mode = privacy_mode
         self.fallback_provider = fallback_provider

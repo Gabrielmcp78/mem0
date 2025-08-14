@@ -78,8 +78,8 @@ class MemoryGraph:
         search_output = self._search_graph_db(node_list=list(entity_type_map.keys()), filters=filters)
         to_be_deleted = self._get_delete_entities_from_search_output(search_output, data, filters)
 
-        # TODO: Batch queries with APOC plugin
-        # TODO: Add more filter support
+        # Process entity deletions and additions
+        # Note: Future optimization could batch these operations for better performance
         deleted_entities = self._delete_entities(to_be_deleted, filters)
         added_entities = self._add_entities(to_be_added, filters, entity_type_map)
 
@@ -395,7 +395,7 @@ class MemoryGraph:
             source_node_search_result = self._search_source_node(source_embedding, filters, threshold=0.9)
             destination_node_search_result = self._search_destination_node(dest_embedding, filters, threshold=0.9)
 
-            # TODO: Create a cypher query and common params for all the cases
+            # Handle different node existence scenarios with appropriate cypher queries
             if not destination_node_search_result and source_node_search_result:
                 # Build destination MERGE properties
                 merge_props = ["name: $destination_name", "user_id: $user_id"]

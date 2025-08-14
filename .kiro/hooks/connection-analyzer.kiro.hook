@@ -1,0 +1,23 @@
+{
+  "enabled": true,
+  "name": "Connection Analyzer",
+  "description": "Analyzes all functions and connection points in the codebase to identify established connections and missing integrations, providing recommendations for completing connectivity from frontend to backend",
+  "version": "1",
+  "when": {
+    "type": "userTriggered",
+    "patterns": [
+      "**/*.py",
+      "**/*.js",
+      "**/*.ts",
+      "**/*.tsx",
+      "**/*.json",
+      "**/*.yaml",
+      "**/*.yml",
+      "**/*.md"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Analyze all functions and connection points in the modified files. For each function or component:\n\n1. **Function Inventory**: List all functions, classes, and connection points\n2. **Connection Status**: Determine if connections are established or missing\n3. **Missing Connections**: Identify what each unconnected function should connect to\n4. **Integration Recommendations**: Provide specific steps to establish missing connections\n5. **Frontend-to-Backend Flow**: Map the complete data flow from UI to backend services\n6. **API Endpoints**: Identify missing or incomplete API connections\n7. **Service Dependencies**: Check if all required services are properly connected\n\nFocus on:\n- MCP server connections\n- API endpoint mappings\n- Database integrations\n- Frontend-backend communication\n- Service orchestration\n- Authentication flows\n- Memory operations connectivity\n\nProvide actionable recommendations for completing the connectivity chain from frontend user interactions to backend data persistence."
+  }
+}

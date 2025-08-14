@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
 /**
- * Gabriel's Apple Intelligence Mem0 MCP Server
+ * Gabriel's FoundationModels Mem0 MCP Server
  * 
- * Full stack with Apple Intelligence LLM:
+ * Full stack with FoundationModels LLM:
  * - Qdrant (vector embeddings)
  * - Neo4j (graph relationships) 
  * - SQLite (structured metadata)
- * - Apple Intelligence (LLM processing)
+ * - FoundationModels (LLM processing)
  */
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
@@ -60,7 +60,7 @@ try:
     from mem0 import Memory
     from mem0.configs.base import MemoryConfig
     
-    # Apple Intelligence configuration
+    # FoundationModels configuration
     config = {
         "vector_store": {
             "provider": "qdrant",
@@ -112,7 +112,7 @@ try:
                 "neo4j": "localhost:7687",
                 "sqlite": "file-based"
             },
-            "status": "Apple Intelligence memory system operational"
+            "status": "FoundationModels memory system operational"
         }
     
     elif operation == "add":
@@ -203,7 +203,7 @@ except Exception as e:
 
       const timeout = setTimeout(() => {
         python.kill('SIGTERM');
-        reject(new Error(`Apple Intelligence mem0 operation timeout (45s): ${operation}`));
+        reject(new Error(`FoundationModels mem0 operation timeout (45s): ${operation}`));
       }, 45000);
 
       python.stdout.on('data', (data) => {
@@ -218,19 +218,19 @@ except Exception as e:
         clearTimeout(timeout);
 
         if (code !== 0) {
-          reject(new Error(`Apple Intelligence mem0 operation failed (code ${code}): ${error}`));
+          reject(new Error(`FoundationModels mem0 operation failed (code ${code}): ${error}`));
           return;
         }
 
         try {
           const result = JSON.parse(output.trim());
           if (result.error) {
-            reject(new Error(`Apple Intelligence error: ${result.error}`));
+            reject(new Error(`FoundationModels error: ${result.error}`));
           } else {
             resolve(result);
           }
         } catch (parseError) {
-          reject(new Error(`Failed to parse Apple Intelligence response: ${parseError.message}\nRaw output: ${output}`));
+          reject(new Error(`Failed to parse FoundationModels response: ${parseError.message}\nRaw output: ${output}`));
         }
       });
     });
@@ -242,7 +242,7 @@ except Exception as e:
         tools: [
           {
             name: 'test_connection',
-            description: 'Test Apple Intelligence memory system connection',
+            description: 'Test FoundationModels memory system connection',
             inputSchema: {
               type: 'object',
               properties: {}
@@ -250,7 +250,7 @@ except Exception as e:
           },
           {
             name: 'add_memory',
-            description: 'Add memory using Apple Intelligence processing',
+            description: 'Add memory using FoundationModels processing',
             inputSchema: {
               type: 'object',
               properties: {
@@ -280,7 +280,7 @@ except Exception as e:
           },
           {
             name: 'search_memories',
-            description: 'Search memories with Apple Intelligence semantic understanding',
+            description: 'Search memories with FoundationModels semantic understanding',
             inputSchema: {
               type: 'object',
               properties: {
@@ -400,8 +400,8 @@ except Exception as e:
   async run() {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
-    console.error('🍎 Apple Intelligence Mem0 Server running!');
-    console.error('🧠 Full Stack: Qdrant + Neo4j + SQLite + Apple Intelligence');
+    console.error('🍎 FoundationModels Mem0 Server running!');
+    console.error('🧠 Full Stack: Qdrant + Neo4j + SQLite + FoundationModels');
     console.error('✨ Enhanced fact extraction and semantic understanding active');
   }
 }

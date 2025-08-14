@@ -103,7 +103,7 @@ For production environments, use our Docker-based deployment:
 # Access services
 # Memory API: http://localhost:8000
 # Memory UI:  http://localhost:3000
-# Qdrant:     http://localhost:6333
+# Qdrant:     http://localhost:10333 (or 6333 if running directly)
 # Ollama:     http://localhost:11434
 ```
 
@@ -156,11 +156,11 @@ For detailed integration steps, see the [Quickstart](https://docs.mem0.ai/quicks
 
 ## 🔗 Integrations & Demos
 
-- **🍎 Apple Intelligence**: Complete local processing with Foundation Models ([Setup Guide](integrations/mcp/README.md))
+- **🍎 FoundationModels**: Complete local processing with Foundation Models ([Setup Guide](integrations/mcp/README.md))
 - **ChatGPT with Memory**: Personalized chat powered by Mem0 ([Live Demo](https://mem0.dev/demo))
 - **Browser Extension**: Store memories across ChatGPT, Perplexity, and Claude ([Chrome Extension](https://chromewebstore.google.com/detail/onihkkbipkfeijkadecaafbgagkhglop?utm_source=item-share-cb))
 - **Agent Frameworks**: AutoGen, CrewAI, LangChain integrations ([Guide](documentation/INTEGRATIONS.md))
-- **MCP Server**: Model Context Protocol integration with Apple Intelligence ([Setup](integrations/mcp/))
+- **MCP Server**: Model Context Protocol integration with FoundationModels ([Setup](integrations/mcp/))
 - **UI Components**: React dashboard and mobile app ([Components](integrations/ui/))
 
 ## 📚 Documentation & Support

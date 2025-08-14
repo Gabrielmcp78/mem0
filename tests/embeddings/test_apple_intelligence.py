@@ -1,7 +1,7 @@
 """
-Tests for Apple Intelligence Embedding Provider
+Tests for FoundationModels Embedding Provider
 
-This module contains unit tests for the Apple Intelligence embedding provider.
+This module contains unit tests for the FoundationModels embedding provider.
 """
 
 import pytest
@@ -17,7 +17,7 @@ from mem0.utils.apple_intelligence import (
 
 
 class TestAppleIntelligenceEmbedder:
-    """Test cases for Apple Intelligence embedder"""
+    """Test cases for FoundationModels embedder"""
     
     def test_init_with_default_config(self):
         """Test initialization with default configuration"""
@@ -71,7 +71,7 @@ class TestAppleIntelligenceEmbedder:
             assert embedder.neural_engine_optimization is True  # Default value
     
     def test_init_apple_intelligence_unavailable(self):
-        """Test initialization when Apple Intelligence is unavailable"""
+        """Test initialization when FoundationModels is unavailable"""
         with patch('mem0.embeddings.apple_intelligence.get_foundation_models_interface') as mock_interface:
             mock_foundation_models = Mock()
             mock_foundation_models.is_available = False
@@ -128,7 +128,7 @@ class TestAppleIntelligenceEmbedder:
             mock_foundation_models.generate_embeddings.assert_not_called()
     
     def test_embed_apple_intelligence_unavailable(self):
-        """Test embedding generation when Apple Intelligence becomes unavailable"""
+        """Test embedding generation when FoundationModels becomes unavailable"""
         with patch('mem0.embeddings.apple_intelligence.get_foundation_models_interface') as mock_interface:
             mock_foundation_models = Mock()
             mock_foundation_models.is_available = False

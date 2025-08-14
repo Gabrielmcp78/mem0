@@ -1,0 +1,36 @@
+{
+  "enabled": true,
+  "name": "TODO/Placeholder Code Detector",
+  "description": "Monitors all code files for TODO comments, placeholder code, or mock implementations and alerts the agent to ensure only complete, production-ready code is written",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*.py",
+      "**/*.js",
+      "**/*.ts",
+      "**/*.jsx",
+      "**/*.tsx",
+      "**/*.java",
+      "**/*.cpp",
+      "**/*.c",
+      "**/*.cs",
+      "**/*.go",
+      "**/*.rs",
+      "**/*.php",
+      "**/*.rb",
+      "**/*.swift",
+      "**/*.kt",
+      "**/*.scala",
+      "**/*.sh",
+      "**/*.yaml",
+      "**/*.yml",
+      "**/*.json",
+      "**/*.md"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "CRITICAL CODE QUALITY VIOLATION DETECTED:\n\nThe file that was just modified contains TODO comments, placeholder code, or mock implementations. This is completely unacceptable in our development standards.\n\nVIOLATIONS FOUND:\n- TODO comments indicating incomplete work\n- Placeholder code that needs to be replaced\n- Mock implementations that should be production-ready\n- Temporary code that was never finalized\n\nREQUIRED ACTIONS:\n1. Immediately review the modified file for any TODO, FIXME, HACK, or placeholder comments\n2. Replace all placeholder code with complete, working implementations\n3. Remove all mock code and implement proper functionality\n4. Ensure all code is production-ready, elegant, and clean\n5. Test the implementation thoroughly before considering it complete\n\nSTANDARDS REMINDER:\n- Every line of code must be production-ready\n- No TODO comments are allowed in committed code\n- No placeholder functions or mock implementations\n- All code must be complete, tested, and elegant\n- Clean, maintainable code is the only acceptable standard\n\nPlease fix these violations immediately and ensure all code meets our production standards."
+  }
+}

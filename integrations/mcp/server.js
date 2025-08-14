@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 /**
- * Gabriel's Apple Intelligence Memory MCP Server (Node.js Wrapper)
+ * Gabriel's FoundationModels Memory MCP Server (Node.js Wrapper)
  * 
- * This Node.js server wraps the Python Apple Intelligence memory system
+ * This Node.js server wraps the Python FoundationModels memory system
  * for reliable integration with Claude Desktop via MCP protocol.
  */
 
@@ -41,7 +41,7 @@ class AppleIntelligenceMemoryServer {
   }
 
   /**
-   * Execute Python memory operation with Apple Intelligence
+   * Execute Python memory operation with FoundationModels
    */
   async executePythonMemoryOperation(operation, params = {}) {
     return new Promise((resolve, reject) => {
@@ -94,7 +94,7 @@ class AppleIntelligenceMemoryServer {
         tools: [
           {
             name: 'test_connection',
-            description: 'Test Apple Intelligence memory system connection',
+            description: 'Test FoundationModels memory system connection',
             inputSchema: {
               type: 'object',
               properties: {},
@@ -102,7 +102,7 @@ class AppleIntelligenceMemoryServer {
           },
           {
             name: 'add_memory',
-            description: 'Add new memory using Apple Intelligence processing',
+            description: 'Add new memory using FoundationModels processing',
             inputSchema: {
               type: 'object',
               properties: {
@@ -133,7 +133,7 @@ class AppleIntelligenceMemoryServer {
           },
           {
             name: 'search_memories',
-            description: 'Search memories using Apple Intelligence semantic understanding',
+            description: 'Search memories using FoundationModels semantic understanding',
             inputSchema: {
               type: 'object',
               properties: {
@@ -245,7 +245,7 @@ class AppleIntelligenceMemoryServer {
           },
           {
             name: 'get_agent_memories',
-            description: 'Get memories specific to an agent with Apple Intelligence processing',
+            description: 'Get memories specific to an agent with FoundationModels processing',
             inputSchema: {
               type: 'object',
               properties: {
@@ -273,7 +273,7 @@ class AppleIntelligenceMemoryServer {
           },
           {
             name: 'get_shared_context',
-            description: 'Get shared context for multi-agent conversation using Apple Intelligence',
+            description: 'Get shared context for multi-agent conversation using FoundationModels',
             inputSchema: {
               type: 'object',
               properties: {
@@ -297,7 +297,7 @@ class AppleIntelligenceMemoryServer {
           },
           {
             name: 'resolve_memory_conflicts',
-            description: 'Resolve conflicts between agent memories using Apple Intelligence',
+            description: 'Resolve conflicts between agent memories using FoundationModels',
             inputSchema: {
               type: 'object',
               properties: {
@@ -321,7 +321,7 @@ class AppleIntelligenceMemoryServer {
           },
           {
             name: 'get_agent_collaboration_summary',
-            description: 'Get a summary of agent collaboration for a specific run using Apple Intelligence',
+            description: 'Get a summary of agent collaboration for a specific run using FoundationModels',
             inputSchema: {
               type: 'object',
               properties: {
@@ -398,8 +398,8 @@ class AppleIntelligenceMemoryServer {
             result = {
               status: 'Connected',
               server_name: 'gabriel-apple-intelligence-memory',
-              system_type: 'Apple Intelligence Local Memory System',
-              message: '🍎 Gabriel\'s Apple Intelligence memory system is online and ready!',
+              system_type: 'FoundationModels Local Memory System',
+              message: '🍎 Gabriel\'s FoundationModels memory system is online and ready!',
               timestamp: new Date().toISOString()
             };
             break;
@@ -431,7 +431,7 @@ class AppleIntelligenceMemoryServer {
   async run() {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
-    console.error('🍎 Gabriel\'s Apple Intelligence Memory MCP Server running');
+    console.error('🍎 Gabriel\'s FoundationModels Memory MCP Server running');
   }
 }
 

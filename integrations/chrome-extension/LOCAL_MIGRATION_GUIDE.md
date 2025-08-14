@@ -2,7 +2,7 @@
 
 ## 🎯 **Objective**
 
-Convert the existing Mem0 Chrome extension from managed cloud service to your local Apple Intelligence-enhanced memory system.
+Convert the existing Mem0 Chrome extension from managed cloud service to your local FoundationModels-enhanced memory system.
 
 ## 📋 **Current Chrome Extension Analysis**
 
@@ -88,7 +88,7 @@ chrome-extension-local/
   "manifest_version": 3,
   "name": "Mem0 Local Memory",
   "version": "2.0.0",
-  "description": "Local AI memory system powered by Apple Intelligence",
+  "description": "Local AI memory system powered by FoundationModels",
   "permissions": [
     "activeTab",
     "storage",
@@ -499,9 +499,9 @@ zip -r mem0-local-extension.zip .
 
 ## 🎯 **Enhanced Features**
 
-### **Apple Intelligence Integration**
+### **FoundationModels Integration**
 
-The local system now leverages Apple Intelligence for:
+The local system now leverages FoundationModels for:
 - **Better semantic understanding** of web content
 - **Improved memory extraction** from pages
 - **Enhanced search relevance** 
@@ -540,7 +540,7 @@ function extractMainContent() {
 ### **Privacy & Security**
 - ✅ **No data leaves your machine**
 - ✅ **No API keys or authentication needed**
-- ✅ **Apple Intelligence processing on-device**
+- ✅ **FoundationModels processing on-device**
 - ✅ **Full control over your memory data**
 
 ### **Performance**
@@ -555,4 +555,4 @@ function extractMainContent() {
 - ✅ **Unlimited usage** (no quotas)
 - ✅ **Future-proof** (no vendor lock-in)
 
-**Your Chrome extension is now powered by your local Apple Intelligence-enhanced memory system! 🌐🧠**
+**Your Chrome extension is now powered by your local FoundationModels-enhanced memory system! 🌐🧠**

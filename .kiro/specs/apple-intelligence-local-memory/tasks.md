@@ -1,25 +1,25 @@
 # Implementation Plan
 
-## Phase 1: Apple Intelligence Foundation Models Interface
+## Phase 1: FoundationModels Foundation Models Interface
 
 - [x] 1. Create Foundation Models interface layer
 
   - Create `mem0/utils/apple_intelligence.py` with FoundationModelsInterface class
-  - Implement macOS version detection and Apple Intelligence availability checking
+  - Implement macOS version detection and FoundationModels availability checking
   - Add PyObjC integration for Foundation Models framework access
-  - Create error handling for when Apple Intelligence is unavailable
+  - Create error handling for when FoundationModels is unavailable
   - _Requirements: 4.1, 4.2, 8.1_
 
-- [x] 2. Implement Apple Intelligence LLM provider
+- [x] 2. Implement FoundationModels LLM provider
 
   - Create `mem0/llms/apple_intelligence.py` with AppleIntelligenceLLM class
   - Extend LLMBase interface for seamless mem0 integration
   - Implement generate_response method using Foundation Models text generation
   - Add configuration handling for max_tokens, temperature, and model selection
-  - Implement graceful fallback when Apple Intelligence is unavailable
+  - Implement graceful fallback when FoundationModels is unavailable
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5_
 
-- [x] 3. Implement Apple Intelligence embedding provider
+- [x] 3. Implement FoundationModels embedding provider
   - Create `mem0/embeddings/apple_intelligence.py` with AppleIntelligenceEmbedder class
   - Extend EmbeddingBase interface for seamless mem0 integration
   - Implement embed method using Foundation Models embedding generation
@@ -29,35 +29,35 @@
 
 ## Phase 2: Provider Registration and Factory Integration
 
-- [x] 4. Register Apple Intelligence providers in factory system
+- [x] 4. Register FoundationModels providers in factory system
 
   - Update `mem0/utils/factory.py` to include apple_intelligence in LlmFactory.provider_to_class
   - Update `mem0/utils/factory.py` to include apple_intelligence in EmbedderFactory.provider_to_class
   - Test provider instantiation through factory system
-  - Verify configuration validation works with Apple Intelligence providers
+  - Verify configuration validation works with FoundationModels providers
   - _Requirements: 1.1, 2.1_
 
-- [x] 5. Create Apple Intelligence configuration classes
+- [x] 5. Create FoundationModels configuration classes
   - Create `mem0/configs/llms/apple_intelligence.py` with AppleIntelligenceLlmConfig
   - Create `mem0/configs/embeddings/apple_intelligence.py` with AppleIntelligenceEmbedderConfig
   - Define configuration schema with Foundation Models specific options
-  - Add validation for Apple Intelligence specific parameters
+  - Add validation for FoundationModels specific parameters
   - _Requirements: 1.1, 2.1, 4.1_
 
 ## Phase 3: MCP Server Integration (Existing Infrastructure Ready)
 
-- [x] 6. Node.js MCP server Apple Intelligence preparation (COMPLETED)
+- [x] 6. Node.js MCP server FoundationModels preparation (COMPLETED)
 
-  - Node.js server (`integrations/mcp/server.js`) already configured for Apple Intelligence
-  - Environment variables and tool descriptions ready for Apple Intelligence backend
-  - Apple Intelligence status indicators already implemented in test_connection
+  - Node.js server (`integrations/mcp/server.js`) already configured for FoundationModels
+  - Environment variables and tool descriptions ready for FoundationModels backend
+  - FoundationModels status indicators already implemented in test_connection
   - _Requirements: 3.1, 3.4, 8.1_
 
-- [x] 7. Update Python MCP server to use real Apple Intelligence providers
+- [x] 7. Update Python MCP server to use real FoundationModels providers
 
-  - Replace placeholder Apple Intelligence classes in `integrations/mcp/server.py`
+  - Replace placeholder FoundationModels classes in `integrations/mcp/server.py`
   - Update Memory initialization to use actual apple_intelligence providers from factory
-  - Remove mock Apple Intelligence implementations and use real Foundation Models
+  - Remove mock FoundationModels implementations and use real Foundation Models
   - Test integration with both Claude Desktop and Kiro IDE
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 7.2_
 
@@ -66,7 +66,7 @@
   - Update all MCP servers (`server.py`, `server.js`, `kiro_server.py`) for agent tracking
   - Add agent_id and run_id tracking in metadata across all servers
   - Implement multi-agent context sharing capabilities
-  - Add Apple Intelligence processing indicators in metadata
+  - Add FoundationModels processing indicators in metadata
   - Create agent-specific memory retrieval and conflict resolution
   - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
 
@@ -74,8 +74,8 @@
 
 **Status**: All critical tasks completed successfully! 🎉
 
-The Apple Intelligence Local Memory System is now fully operational with:
-- ✅ Apple Intelligence Foundation Models integration
+The FoundationModels Local Memory System is now fully operational with:
+- ✅ FoundationModels Foundation Models integration
 - ✅ Real LLM and Embedding providers working on-device
 - ✅ Python MCP server ready for Claude Desktop and Kiro IDE
 - ✅ Node.js MCP server ready for Claude Desktop
@@ -96,10 +96,10 @@ All remaining tasks have been moved to `FUTURE_FEATURES.md` as they are enhancem
 
 ## 🚀 Ready to Use
 
-You can now start using the Apple Intelligence Local Memory System with:
+You can now start using the FoundationModels Local Memory System with:
 
 1. **Claude Desktop**: Use the Node.js MCP server configuration
 2. **Kiro IDE**: Use the Python MCP server directly
 3. **Direct Integration**: Use the Memory class in Python applications
 
-All memory operations now use Apple Intelligence Foundation Models for completely local, on-device processing.
+All memory operations now use FoundationModels Foundation Models for completely local, on-device processing.

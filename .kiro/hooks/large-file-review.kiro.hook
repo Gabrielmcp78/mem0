@@ -1,0 +1,30 @@
+{
+  "enabled": true,
+  "name": "Large File Code Review",
+  "description": "Triggers a code review when any file exceeds 600 lines of code, suggesting modular refactoring and cleaner code practices",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*.py",
+      "**/*.js",
+      "**/*.ts",
+      "**/*.jsx",
+      "**/*.tsx",
+      "**/*.java",
+      "**/*.cpp",
+      "**/*.c",
+      "**/*.cs",
+      "**/*.go",
+      "**/*.rs",
+      "**/*.rb",
+      "**/*.php",
+      "**/*.swift",
+      "**/*.kt"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "The file that was just modified has grown past 600 lines of code. Please review this file and consider whether it could be split into more modular, task-specific components. Large files can become difficult to maintain, test, and understand. \n\nConsider:\n- Breaking down large classes into smaller, focused classes\n- Extracting utility functions into separate modules\n- Separating concerns (data access, business logic, presentation)\n- Creating focused modules with single responsibilities\n\nPlease suggest a refactoring approach that would make the code more elegant, maintainable, and less verbose while preserving all functionality. Focus on clean code principles and modular design."
+  }
+}

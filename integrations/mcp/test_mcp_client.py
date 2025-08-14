@@ -17,7 +17,7 @@ if project_root not in sys.path:
 async def test_mcp_server():
     """Test the MCP server functionality"""
     
-    print("🧪 Testing MCP Server with Apple Intelligence...")
+    print("🧪 Testing MCP Server with FoundationModels...")
     
     # Start the server process
     server_script = os.path.join(os.path.dirname(__file__), 'test_minimal_server.py')
@@ -114,7 +114,7 @@ async def test_mcp_server():
             return False
         
         # Test 3: Test connection tool
-        print("🔄 Testing connection with Apple Intelligence...")
+        print("🔄 Testing connection with FoundationModels...")
         test_connection_request = {
             "jsonrpc": "2.0",
             "id": 3,
@@ -139,7 +139,7 @@ async def test_mcp_server():
                     connection_data = json.loads(content_text)
                     print(f"✅ Connection test successful:")
                     print(f"   - Status: {connection_data.get('status')}")
-                    print(f"   - Apple Intelligence: {connection_data.get('apple_intelligence_available')}")
+                    print(f"   - FoundationModels: {connection_data.get('apple_intelligence_available')}")
                     print(f"   - Foundation Models: {connection_data.get('foundation_models_integration')}")
                     print(f"   - Neural Engine: {connection_data.get('neural_engine_optimized')}")
                     print(f"   - Actual LLM Provider: {connection_data.get('actual_providers', {}).get('llm')}")
@@ -158,7 +158,7 @@ async def test_mcp_server():
             return False
         
         # Test 4: Add a memory
-        print("🔄 Testing memory addition with Apple Intelligence...")
+        print("🔄 Testing memory addition with FoundationModels...")
         add_memory_request = {
             "jsonrpc": "2.0",
             "id": 4,
@@ -166,7 +166,7 @@ async def test_mcp_server():
             "params": {
                 "name": "add_memory",
                 "arguments": {
-                    "messages": "Gabriel is testing Apple Intelligence MCP server integration with Foundation Models",
+                    "messages": "Gabriel is testing FoundationModels MCP server integration with Foundation Models",
                     "user_id": "gabriel",
                     "agent_id": "test_client",
                     "metadata": json.dumps({"test": "apple_intelligence_integration"})
@@ -189,7 +189,7 @@ async def test_mcp_server():
                         memory_data = json.loads(content_text)
                         print(f"✅ Memory added successfully:")
                         print(f"   - Memory ID: {memory_data.get('id', 'Unknown')}")
-                        print(f"   - Message: Added via Apple Intelligence")
+                        print(f"   - Message: Added via FoundationModels")
                     except json.JSONDecodeError:
                         print(f"✅ Memory operation completed: {content_text[:100]}...")
                 else:
@@ -205,7 +205,7 @@ async def test_mcp_server():
             print(f"❌ Invalid JSON response during memory addition: {e}")
             return False
         
-        print("\n🎉 All tests passed! Apple Intelligence MCP server is working correctly.")
+        print("\n🎉 All tests passed! FoundationModels MCP server is working correctly.")
         return True
         
     except Exception as e:

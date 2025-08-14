@@ -1,8 +1,8 @@
 """
-Apple Intelligence Foundation Models Interface
+FoundationModels Foundation Models Interface
 
 This module provides an interface layer for macOS Foundation Models framework,
-enabling local on-device AI processing through Apple Intelligence.
+enabling local on-device AI processing through FoundationModels.
 """
 
 import logging
@@ -15,12 +15,12 @@ logger = logging.getLogger(__name__)
 
 
 class AppleIntelligenceError(Exception):
-    """Base exception for Apple Intelligence related errors"""
+    """Base exception for FoundationModels related errors"""
     pass
 
 
 class AppleIntelligenceUnavailableError(AppleIntelligenceError):
-    """Raised when Apple Intelligence is not available on the system"""
+    """Raised when FoundationModels is not available on the system"""
     pass
 
 
@@ -28,7 +28,7 @@ class FoundationModelsInterface:
     """
     Interface layer for macOS Foundation Models framework
     
-    This class provides a unified interface to Apple Intelligence Foundation Models,
+    This class provides a unified interface to FoundationModels Foundation Models,
     handling availability detection, framework initialization, and error management.
     """
     
@@ -48,11 +48,11 @@ class FoundationModelsInterface:
     
     def _check_availability(self) -> None:
         """
-        Check if Apple Intelligence Foundation Models are available
+        Check if FoundationModels Foundation Models are available
         
         Requirements covered:
         - 4.1: Detect and connect to macOS Foundation Models framework
-        - 8.1: Log operations confirming Apple Intelligence local processing
+        - 8.1: Log operations confirming FoundationModels local processing
         """
         if self._availability_checked:
             return
@@ -62,7 +62,7 @@ class FoundationModelsInterface:
         try:
             # Check if running on macOS
             if platform.system() != 'Darwin':
-                self._error_message = "Apple Intelligence is only available on macOS"
+                self._error_message = "FoundationModels is only available on macOS"
                 logger.warning(self._error_message)
                 return
             
@@ -73,10 +73,10 @@ class FoundationModelsInterface:
                 logger.error(self._error_message)
                 return
             
-            # Check minimum macOS version (15.1+ required for Apple Intelligence)
+            # Check minimum macOS version (15.1+ required for FoundationModels)
             major, minor = self._macos_version
             if major < 15 or (major == 15 and minor < 1):
-                self._error_message = f"Apple Intelligence requires macOS 15.1+, found {major}.{minor}"
+                self._error_message = f"FoundationModels requires macOS 15.1+, found {major}.{minor}"
                 logger.warning(self._error_message)
                 return
             
@@ -85,20 +85,20 @@ class FoundationModelsInterface:
                 import objc
                 logger.info("PyObjC is available for Foundation Models integration")
             except ImportError:
-                self._error_message = "PyObjC is required for Apple Intelligence integration"
+                self._error_message = "PyObjC is required for FoundationModels integration"
                 logger.error(self._error_message)
                 return
             
             # Try to access Foundation Models framework
             if self._check_foundation_models_framework():
                 self._is_available = True
-                logger.info(f"Apple Intelligence Foundation Models available on macOS {major}.{minor}")
+                logger.info(f"FoundationModels Foundation Models available on macOS {major}.{minor}")
             else:
                 self._error_message = "Foundation Models framework is not accessible"
                 logger.warning(self._error_message)
                 
         except Exception as e:
-            self._error_message = f"Error checking Apple Intelligence availability: {str(e)}"
+            self._error_message = f"Error checking FoundationModels availability: {str(e)}"
             logger.error(self._error_message, exc_info=True)
     
     def _get_macos_version(self) -> Optional[Tuple[int, int]]:
@@ -187,7 +187,7 @@ class FoundationModelsInterface:
         - 4.2: Utilize Apple's Neural Engine for optimal performance
         """
         if not self._is_available:
-            raise AppleIntelligenceUnavailableError("Apple Intelligence is not available")
+            raise AppleIntelligenceUnavailableError("FoundationModels is not available")
         
         try:
             import objc
@@ -215,12 +215,12 @@ class FoundationModelsInterface:
     
     @property
     def is_available(self) -> bool:
-        """Check if Apple Intelligence Foundation Models are available"""
+        """Check if FoundationModels Foundation Models are available"""
         return self._is_available
     
     @property
     def error_message(self) -> Optional[str]:
-        """Get the error message if Apple Intelligence is unavailable"""
+        """Get the error message if FoundationModels is unavailable"""
         return self._error_message
     
     @property
@@ -230,13 +230,13 @@ class FoundationModelsInterface:
     
     def ensure_available(self) -> None:
         """
-        Ensure Apple Intelligence is available, raise exception if not
+        Ensure FoundationModels is available, raise exception if not
         
         Requirements covered:
         - 4.1: Detect and connect to macOS Foundation Models framework
         """
         if not self._is_available:
-            error_msg = self._error_message or "Apple Intelligence Foundation Models are not available"
+            error_msg = self._error_message or "FoundationModels Foundation Models are not available"
             raise AppleIntelligenceUnavailableError(error_msg)
     
     def generate_text(self, prompt: str, **kwargs) -> str:
@@ -252,12 +252,12 @@ class FoundationModelsInterface:
             
         Requirements covered:
         - 4.2: Utilize Apple's Neural Engine for optimal performance
-        - 8.1: Log operations confirming Apple Intelligence local processing
+        - 8.1: Log operations confirming FoundationModels local processing
         """
         self.ensure_available()
         
         # Log the operation for transparency
-        logger.info("Generating text using Apple Intelligence Foundation Models (local processing)")
+        logger.info("Generating text using FoundationModels Foundation Models (local processing)")
         
         try:
             # Extract parameters
@@ -311,7 +311,7 @@ class FoundationModelsInterface:
                     # Return JSON format expected by Mem0
                     response = json.dumps({"facts": facts})
                     
-                    logger.info(f"Extracted {len(facts)} facts using Apple Intelligence (on-device): {facts}")
+                    logger.info(f"Extracted {len(facts)} facts using FoundationModels (on-device): {facts}")
                     return response
                 else:
                     # Fallback for fact extraction without clear input section
@@ -321,13 +321,13 @@ class FoundationModelsInterface:
             
             # For other text generation, provide a more realistic response
             # In actual implementation, this would call the Foundation Models API
-            response = f"Apple Intelligence processed on Neural Engine: {prompt[:100]}..."
+            response = f"FoundationModels processed on Neural Engine: {prompt[:100]}..."
             
-            logger.info("Text generation completed using Apple Intelligence (on-device)")
+            logger.info("Text generation completed using FoundationModels (on-device)")
             return response
             
         except Exception as e:
-            error_msg = f"Error generating text with Apple Intelligence: {str(e)}"
+            error_msg = f"Error generating text with FoundationModels: {str(e)}"
             logger.error(error_msg, exc_info=True)
             raise AppleIntelligenceError(error_msg)
     
@@ -344,7 +344,7 @@ class FoundationModelsInterface:
             
         Requirements covered:
         - 4.2: Utilize Apple's Neural Engine for optimal performance
-        - 8.1: Log operations confirming Apple Intelligence local processing
+        - 8.1: Log operations confirming FoundationModels local processing
         """
         self.ensure_available()
         
@@ -357,7 +357,7 @@ class FoundationModelsInterface:
         batch_size = kwargs.get('batch_size', 1)
         
         # Log the operation for transparency
-        logger.info(f"Generating embeddings using Apple Intelligence Foundation Models (local processing) - "
+        logger.info(f"Generating embeddings using FoundationModels Foundation Models (local processing) - "
                    f"action: {memory_action}, type: {embedding_type}, neural_engine: {neural_engine_optimization}")
         
         try:
@@ -397,24 +397,24 @@ class FoundationModelsInterface:
                 if magnitude > 0:
                     embeddings = [x / magnitude for x in embeddings]
             
-            logger.info(f"Embedding generation completed using Apple Intelligence "
+            logger.info(f"Embedding generation completed using FoundationModels "
                        f"(on-device, {dimensions} dimensions, Neural Engine: {neural_engine_optimization})")
             return embeddings
             
         except Exception as e:
-            error_msg = f"Error generating embeddings with Apple Intelligence: {str(e)}"
+            error_msg = f"Error generating embeddings with FoundationModels: {str(e)}"
             logger.error(error_msg, exc_info=True)
             raise AppleIntelligenceError(error_msg)
     
     def get_system_info(self) -> Dict[str, Any]:
         """
-        Get system information related to Apple Intelligence
+        Get system information related to FoundationModels
         
         Returns:
             Dictionary with system information
             
         Requirements covered:
-        - 8.1: Log operations confirming Apple Intelligence local processing
+        - 8.1: Log operations confirming FoundationModels local processing
         """
         return {
             'available': self._is_available,
@@ -447,10 +447,10 @@ def get_foundation_models_interface() -> FoundationModelsInterface:
 
 def check_apple_intelligence_availability() -> bool:
     """
-    Quick check if Apple Intelligence is available
+    Quick check if FoundationModels is available
     
     Returns:
-        True if Apple Intelligence is available, False otherwise
+        True if FoundationModels is available, False otherwise
     """
     try:
         interface = get_foundation_models_interface()
@@ -461,7 +461,7 @@ def check_apple_intelligence_availability() -> bool:
 
 def get_apple_intelligence_status() -> Dict[str, Any]:
     """
-    Get detailed Apple Intelligence status information
+    Get detailed FoundationModels status information
     
     Returns:
         Dictionary with status information

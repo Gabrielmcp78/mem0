@@ -12,7 +12,7 @@ import sys
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Sequence
 
-# Add project root to Python path for Apple Intelligence imports
+# Add project root to Python path for FoundationModels imports
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
@@ -30,7 +30,7 @@ from mcp.types import (
     LoggingLevel
 )
 
-# Mem0 imports - using local Memory class for Apple Intelligence integration
+# Mem0 imports - using local Memory class for FoundationModels integration
 try:
     from mem0 import Memory
     print("Mem0 local Memory class imported successfully", file=sys.stderr)
@@ -43,10 +43,10 @@ except ImportError as e:
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("mem0-mcp-server")
 
-# Using real Apple Intelligence providers from mem0 package factory system
+# Using real FoundationModels providers from mem0 package factory system
 
 class Mem0MCPServer:
-    """MCP Server for Mem0 local memory operations with Apple Intelligence"""
+    """MCP Server for Mem0 local memory operations with FoundationModels"""
     
     def __init__(self):
         self.server = Server("gabriel-local-memory")
@@ -56,21 +56,21 @@ class Mem0MCPServer:
         self._register_resources()
     
     def _setup_memory(self):
-        """Initialize Mem0 local Memory with real Apple Intelligence Foundation Model providers from factory"""
+        """Initialize Mem0 local Memory with real FoundationModels Foundation Model providers from factory"""
         try:
-            # Import Apple Intelligence utilities for availability checking
+            # Import FoundationModels utilities for availability checking
             from mem0.utils.apple_intelligence import check_apple_intelligence_availability, get_apple_intelligence_status
             
-            # Check Apple Intelligence availability first
+            # Check FoundationModels availability first
             apple_intelligence_available = check_apple_intelligence_availability()
             status = get_apple_intelligence_status()
             
             if apple_intelligence_available:
-                logger.info("🍎 Apple Intelligence Foundation Models detected and available")
+                logger.info("🍎 FoundationModels Foundation Models detected and available")
                 logger.info(f"System info: macOS {status.get('macos_version', 'unknown')}, "
                            f"platform: {status.get('platform', 'unknown')}")
                 
-                # Configure Mem0 to use Apple Intelligence providers from factory
+                # Configure Mem0 to use FoundationModels providers from factory
                 config = {
                     "llm": {
                         "provider": "apple_intelligence",
@@ -100,31 +100,31 @@ class Mem0MCPServer:
                             "collection_name": os.getenv("QDRANT_COLLECTION", "gabriel_apple_intelligence_memories")
                         }
                     }
-                    logger.info("🍎 Qdrant configured for Apple Intelligence memories")
+                    logger.info("🍎 Qdrant configured for FoundationModels memories")
                 
-                # Initialize Memory with Apple Intelligence providers from factory
+                # Initialize Memory with FoundationModels providers from factory
                 self.memory = Memory.from_config(config)
-                logger.info("✅ Mem0 Memory initialized with real Apple Intelligence Foundation Model providers from factory")
-                logger.info("🍎 Apple Intelligence Memory system ready for MCP operations with Foundation Models")
+                logger.info("✅ Mem0 Memory initialized with real FoundationModels Foundation Model providers from factory")
+                logger.info("🍎 FoundationModels Memory system ready for MCP operations with Foundation Models")
                 
             else:
-                # Apple Intelligence not available - log detailed error
-                error_msg = status.get('error_message', 'Apple Intelligence not available')
-                logger.warning(f"⚠️ Apple Intelligence unavailable: {error_msg}")
+                # FoundationModels not available - log detailed error
+                error_msg = status.get('error_message', 'FoundationModels not available')
+                logger.warning(f"⚠️ FoundationModels unavailable: {error_msg}")
                 logger.info("Attempting fallback to default configuration...")
                 
                 # Fallback to basic configuration
                 self.memory = Memory()
-                logger.warning("⚠️ Using fallback Memory configuration - Apple Intelligence may not be available")
+                logger.warning("⚠️ Using fallback Memory configuration - FoundationModels may not be available")
             
         except Exception as e:
-            logger.error(f"Failed to initialize Mem0 with Apple Intelligence providers: {e}")
+            logger.error(f"Failed to initialize Mem0 with FoundationModels providers: {e}")
             logger.info("Attempting fallback to default configuration...")
             
-            # Fallback to basic configuration if Apple Intelligence fails
+            # Fallback to basic configuration if FoundationModels fails
             try:
                 self.memory = Memory()
-                logger.warning("⚠️ Using fallback Memory configuration - Apple Intelligence may not be available")
+                logger.warning("⚠️ Using fallback Memory configuration - FoundationModels may not be available")
             except Exception as fallback_error:
                 logger.error(f"Fallback initialization also failed: {fallback_error}")
                 self.memory = None
@@ -141,7 +141,7 @@ class Mem0MCPServer:
                 Connection status and system information
             """
             try:
-                # Get real Apple Intelligence status
+                # Get real FoundationModels status
                 from mem0.utils.apple_intelligence import check_apple_intelligence_availability, get_apple_intelligence_status
                 
                 apple_intelligence_available = check_apple_intelligence_availability()
@@ -182,7 +182,7 @@ class Mem0MCPServer:
                 response_data = {
                     "status": "Connected",
                     "server_name": "gabriel-local-memory",
-                    "system_type": "Local Innovation Ecosystem with Apple Intelligence",
+                    "system_type": "Local Innovation Ecosystem with FoundationModels",
                     "memory_initialized": self.memory is not None,
                     "apple_intelligence_available": apple_intelligence_available,
                     "apple_intelligence_status": apple_status,
@@ -196,9 +196,9 @@ class Mem0MCPServer:
                 }
                 
                 if apple_intelligence_available:
-                    response_data["message"] = "Gabriel's local memory system with Apple Intelligence Foundation Models is online and ready!"
+                    response_data["message"] = "Gabriel's local memory system with FoundationModels Foundation Models is online and ready!"
                 else:
-                    response_data["message"] = f"Gabriel's local memory system is online with fallback configuration. Apple Intelligence: {apple_status.get('error_message', 'unavailable')}"
+                    response_data["message"] = f"Gabriel's local memory system is online with fallback configuration. FoundationModels: {apple_status.get('error_message', 'unavailable')}"
                 
                 return [TextContent(
                     type="text",
@@ -227,7 +227,7 @@ class Mem0MCPServer:
             metadata: Optional[str] = None
         ) -> List[TextContent]:
             """
-            Add new memory from text content using Mem0 local Memory with Apple Intelligence.
+            Add new memory from text content using Mem0 local Memory with FoundationModels.
             
             Args:
                 messages: Text content to store as memory
@@ -237,7 +237,7 @@ class Mem0MCPServer:
                 metadata: Optional metadata as JSON string
             
             Returns:
-                Result of memory addition operation with Apple Intelligence processing
+                Result of memory addition operation with FoundationModels processing
             """
             try:
                 if not self.memory:
@@ -261,7 +261,7 @@ class Mem0MCPServer:
                     parsed_metadata["run_id"] = run_id
                     parsed_metadata["conversation_context"] = "multi_agent" if agent_id else "single_agent"
                 
-                # Apple Intelligence processing indicators
+                # FoundationModels processing indicators
                 parsed_metadata["processed_by"] = "apple_intelligence_foundation_models"
                 parsed_metadata["neural_engine_optimized"] = True
                 parsed_metadata["local_processing"] = True
@@ -271,7 +271,7 @@ class Mem0MCPServer:
                 from datetime import datetime
                 parsed_metadata["timestamp"] = datetime.now().isoformat()
                 
-                # Add memory using local Memory API with Apple Intelligence processing
+                # Add memory using local Memory API with FoundationModels processing
                 result = self.memory.add(
                     messages=messages,
                     user_id=user_id,
@@ -299,7 +299,7 @@ class Mem0MCPServer:
             limit: int = 10
         ) -> List[TextContent]:
             """
-            Search for relevant memories based on a query using Mem0 v2 API with Apple Intelligence.
+            Search for relevant memories based on a query using Mem0 v2 API with FoundationModels.
             
             Args:
                 query: Search query string
@@ -543,7 +543,7 @@ class Mem0MCPServer:
             limit: int = 50
         ) -> List[TextContent]:
             """
-            Get memories specific to an agent with Apple Intelligence processing.
+            Get memories specific to an agent with FoundationModels processing.
             
             Args:
                 agent_id: Agent identifier to filter by
@@ -599,7 +599,7 @@ class Mem0MCPServer:
             limit: int = 20
         ) -> List[TextContent]:
             """
-            Get shared context for multi-agent conversation using Apple Intelligence.
+            Get shared context for multi-agent conversation using FoundationModels.
             
             Args:
                 run_id: Run identifier for the conversation
@@ -659,7 +659,7 @@ class Mem0MCPServer:
             resolution_strategy: str = "apple_intelligence_merge"
         ) -> List[TextContent]:
             """
-            Resolve conflicts between agent memories using Apple Intelligence.
+            Resolve conflicts between agent memories using FoundationModels.
             
             Args:
                 conflicting_memories: JSON string of conflicting memory IDs
@@ -667,7 +667,7 @@ class Mem0MCPServer:
                 resolution_strategy: Strategy for conflict resolution (default: "apple_intelligence_merge")
             
             Returns:
-                Result of conflict resolution with Apple Intelligence processing
+                Result of conflict resolution with FoundationModels processing
             """
             try:
                 if not self.memory:
@@ -699,7 +699,7 @@ class Mem0MCPServer:
                         text="No conflicting memories found with provided IDs"
                     )]
                 
-                # Use Apple Intelligence to resolve conflicts
+                # Use FoundationModels to resolve conflicts
                 conflict_summary = {
                     "total_conflicts": len(conflicts),
                     "resolution_strategy": resolution_strategy,
@@ -709,7 +709,7 @@ class Mem0MCPServer:
                 }
                 
                 # For now, return the conflict analysis
-                # In a full implementation, this would use Apple Intelligence LLM to merge/resolve
+                # In a full implementation, this would use FoundationModels LLM to merge/resolve
                 return [TextContent(
                     type="text",
                     text=json.dumps(conflict_summary, indent=2, default=str)
@@ -728,14 +728,14 @@ class Mem0MCPServer:
             user_id: str = "gabriel"
         ) -> List[TextContent]:
             """
-            Get a summary of agent collaboration for a specific run using Apple Intelligence.
+            Get a summary of agent collaboration for a specific run using FoundationModels.
             
             Args:
                 run_id: Run identifier for the collaboration session
                 user_id: User identifier (default: "gabriel")
             
             Returns:
-                Summary of multi-agent collaboration with Apple Intelligence insights
+                Summary of multi-agent collaboration with FoundationModels insights
             """
             try:
                 if not self.memory:
@@ -825,7 +825,7 @@ class Mem0MCPServer:
                     "server_name": "gabriel-local-memory",
                     "version": "1.0.0",
                     "memory_initialized": self.memory is not None,
-                    "system_type": "Local Innovation Ecosystem with Apple Intelligence",
+                    "system_type": "Local Innovation Ecosystem with FoundationModels",
                     "providers": {
                         "llm": "apple_intelligence",
                         "embedder": "apple_intelligence",
@@ -840,7 +840,7 @@ class Mem0MCPServer:
             
             elif uri == "gabriel-memory://stats":
                 stats_info = {
-                    "system_name": "Gabriel's Local Memory System with Apple Intelligence",
+                    "system_name": "Gabriel's Local Memory System with FoundationModels",
                     "total_memories": "Available via get_all_memories",
                     "apple_intelligence_active": True,
                     "foundation_models_integration": True,

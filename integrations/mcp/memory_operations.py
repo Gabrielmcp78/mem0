@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Apple Intelligence Memory Operations
+FoundationModels Memory Operations
 Called by Node.js MCP server to perform memory operations
 """
 
@@ -21,18 +21,18 @@ logging.basicConfig(level=logging.ERROR)  # Only show errors to keep output clea
 logger = logging.getLogger("apple-intelligence-memory")
 
 def initialize_memory():
-    """Initialize Mem0 memory with Apple Intelligence configuration"""
+    """Initialize Mem0 memory with FoundationModels configuration"""
     try:
         from mem0 import Memory
         from mem0.utils.apple_intelligence import check_apple_intelligence_availability
         
-        # Check if Apple Intelligence is available
+        # Check if FoundationModels is available
         apple_intelligence_available = check_apple_intelligence_availability()
         
         if apple_intelligence_available:
-            logger.info("✅ Apple Intelligence Foundation Models detected and available")
+            logger.info("✅ FoundationModels Foundation Models detected and available")
             
-            # Configure with Apple Intelligence providers
+            # Configure with FoundationModels providers
             config = {
                 "llm": {
                     "provider": "apple_intelligence",
@@ -59,15 +59,15 @@ def initialize_memory():
                 }
             }
             
-            logger.info("✅ Initializing memory with Apple Intelligence configuration")
+            logger.info("✅ Initializing memory with FoundationModels configuration")
             memory = Memory.from_config(config)
             
             if memory:
-                logger.info("✅ Memory initialized with Apple Intelligence Foundation Models")
+                logger.info("✅ Memory initialized with FoundationModels Foundation Models")
                 return memory
         
-        # Fallback configuration without Apple Intelligence
-        logger.warning("⚠️ Apple Intelligence not available, using fallback configuration")
+        # Fallback configuration without FoundationModels
+        logger.warning("⚠️ FoundationModels not available, using fallback configuration")
         
         # Set a valid OpenAI API key for fallback
         os.environ["OPENAI_API_KEY"] = "sk-proj-fake-key-for-testing-only-not-real"
@@ -112,7 +112,7 @@ def add_memory(params: Dict[str, Any]) -> Dict[str, Any]:
             except json.JSONDecodeError:
                 pass
         
-        # Add Apple Intelligence processing indicators to metadata
+        # Add FoundationModels processing indicators to metadata
         metadata["processed_by"] = "apple_intelligence_foundation_models"
         metadata["neural_engine_optimized"] = True
         metadata["local_processing"] = True
@@ -368,7 +368,7 @@ def get_shared_context(params: Dict[str, Any]) -> Dict[str, Any]:
         return {"error": f"Failed to get shared context: {str(e)}"}
 
 def resolve_memory_conflicts(params: Dict[str, Any]) -> Dict[str, Any]:
-    """Resolve conflicts between agent memories using Apple Intelligence"""
+    """Resolve conflicts between agent memories using FoundationModels"""
     try:
         memory = initialize_memory()
         if not memory:
@@ -421,7 +421,7 @@ def resolve_memory_conflicts(params: Dict[str, Any]) -> Dict[str, Any]:
         if not conflicts:
             return {"error": "No conflicting memories found with provided IDs"}
         
-        # Use Apple Intelligence to resolve conflicts
+        # Use FoundationModels to resolve conflicts
         from datetime import datetime
         conflict_summary = {
             "success": True,

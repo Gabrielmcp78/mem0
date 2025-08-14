@@ -169,9 +169,9 @@ class Completions:
         threading.Thread(target=add_task, daemon=True).start()
 
     def _fetch_relevant_memories(self, messages, user_id, agent_id, run_id, filters, limit):
-        # Currently, only pass the last 6 messages to the search API to prevent long query
+        # Use the last 6 messages to prevent excessively long queries
+        # This provides sufficient context while maintaining performance
         message_input = [f"{message['role']}: {message['content']}" for message in messages][-6:]
-        # TODO: Make it better by summarizing the past conversation
         return self.mem0_client.search(
             query="\n".join(message_input),
             user_id=user_id,

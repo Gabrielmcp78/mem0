@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.gabriel.mem0-apple-intelligence</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/env</string>
+        <string>node</string>
+        <string>${REPO_PATH}/integrations/mcp/mem0_native_node_server.cjs</string>
+    </array>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>QDRANT_URL</key>
+        <string>http://localhost:10333</string>
+        <key>QDRANT_COLLECTION</key>
+        <string>gabriel_apple_intelligence_memories</string>
+        <key>APPLE_INTELLIGENCE_ENABLED</key>
+        <string>true</string>
+        <key>LOG_LEVEL</key>
+        <string>INFO</string>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/Applications/Docker.app/Contents/Resources/bin</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <dict>
+        <key>SuccessfulExit</key>
+        <false/>
+        <key>Crashed</key>
+        <true/>
+    </dict>
+
+    <key>ThrottleInterval</key>
+    <integer>10</integer>
+
+    <key>WorkingDirectory</key>
+    <string>${REPO_PATH}</string>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/mem0-apple-intelligence.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/mem0-apple-intelligence-error.log</string>
+
+    <key>SoftResourceLimits</key>
+    <dict>
+        <key>NumberOfFiles</key>
+        <integer>1024</integer>
+    </dict>
+</dict>
+</plist>

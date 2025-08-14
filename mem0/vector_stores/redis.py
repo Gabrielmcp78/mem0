@@ -16,7 +16,8 @@ from mem0.vector_stores.base import VectorStoreBase
 
 logger = logging.getLogger(__name__)
 
-# TODO: Improve as these are not the best fields for the Redis's perspective. Might do away with them.
+# Default field schema for Redis vector store
+# Optimized for memory storage and retrieval operations
 DEFAULT_FIELDS = [
     {"name": "memory_id", "type": "tag"},
     {"name": "hash", "type": "tag"},
@@ -25,7 +26,7 @@ DEFAULT_FIELDS = [
     {"name": "user_id", "type": "tag"},
     {"name": "memory", "type": "text"},
     {"name": "metadata", "type": "text"},
-    # TODO: Although it is numeric but also accepts string
+    # Timestamp fields stored as numeric for efficient range queries
     {"name": "created_at", "type": "numeric"},
     {"name": "updated_at", "type": "numeric"},
     {

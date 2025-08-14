@@ -1,7 +1,7 @@
 """
-Apple Intelligence Embedding Provider
+FoundationModels Embedding Provider
 
-This module provides an embedding provider that uses Apple Intelligence Foundation Models
+This module provides an embedding provider that uses FoundationModels Foundation Models
 for generating embeddings locally on-device using the Neural Engine.
 """
 
@@ -21,33 +21,33 @@ logger = logging.getLogger(__name__)
 
 class AppleIntelligenceEmbedder(EmbeddingBase):
     """
-    Apple Intelligence embedding provider using Foundation Models framework
+    FoundationModels embedding provider using Foundation Models framework
     
     This embedder leverages Apple's on-device AI capabilities through the Foundation Models
     framework, ensuring all processing occurs locally on the Neural Engine without external API calls.
     
     Requirements covered:
     - 2.1: Use macOS Foundation Models framework for embedding generation
-    - 2.2: Call Apple Intelligence embedding APIs
-    - 2.3: Use Apple Intelligence embeddings for similarity matching
-    - 2.4: Fail gracefully when Apple Intelligence embeddings are unavailable
+    - 2.2: Call FoundationModels embedding APIs
+    - 2.3: Use FoundationModels embeddings for similarity matching
+    - 2.4: Fail gracefully when FoundationModels embeddings are unavailable
     - 2.5: All processing occurs on-device with no external API calls
     """
     
     def __init__(self, config: Optional[BaseEmbedderConfig] = None):
         """
-        Initialize the Apple Intelligence embedder
+        Initialize the FoundationModels embedder
         
         Args:
             config: Embedding configuration options
         """
         super().__init__(config)
         
-        # Set default configuration values for Apple Intelligence
+        # Set default configuration values for FoundationModels
         self.config.model = self.config.model or "apple-intelligence-embeddings"
         self.config.embedding_dims = self.config.embedding_dims or 1536
         
-        # Apple Intelligence specific settings (not in base config)
+        # FoundationModels specific settings (not in base config)
         self.neural_engine_optimization = True
         self.privacy_mode = "strict"
         self.batch_size = 1
@@ -56,7 +56,7 @@ class AppleIntelligenceEmbedder(EmbeddingBase):
         self._foundation_models = None
         self._initialize_foundation_models()
         
-        logger.info(f"Apple Intelligence embedder initialized with model: {self.config.model}, "
+        logger.info(f"FoundationModels embedder initialized with model: {self.config.model}, "
                    f"dimensions: {self.config.embedding_dims}, "
                    f"neural_engine_optimization: {self.neural_engine_optimization}")
     
@@ -66,30 +66,30 @@ class AppleIntelligenceEmbedder(EmbeddingBase):
         
         Requirements covered:
         - 2.1: Use macOS Foundation Models framework for embedding generation
-        - 2.4: Fail gracefully when Apple Intelligence embeddings are unavailable
+        - 2.4: Fail gracefully when FoundationModels embeddings are unavailable
         """
         try:
             self._foundation_models = get_foundation_models_interface()
             
             if not self._foundation_models.is_available:
-                error_msg = (f"Apple Intelligence Foundation Models are not available: "
+                error_msg = (f"FoundationModels Foundation Models are not available: "
                            f"{self._foundation_models.error_message}")
                 logger.error(error_msg)
                 raise AppleIntelligenceUnavailableError(error_msg)
             
-            logger.info("Successfully connected to Apple Intelligence Foundation Models")
+            logger.info("Successfully connected to FoundationModels Foundation Models")
             
         except AppleIntelligenceUnavailableError:
             # Re-raise availability errors
             raise
         except Exception as e:
-            error_msg = f"Failed to initialize Apple Intelligence Foundation Models: {str(e)}"
+            error_msg = f"Failed to initialize FoundationModels Foundation Models: {str(e)}"
             logger.error(error_msg, exc_info=True)
             raise AppleIntelligenceError(error_msg)
     
     def embed(self, text: str, memory_action: Optional[Literal["add", "search", "update"]] = None) -> List[float]:
         """
-        Generate embeddings using Apple Intelligence Foundation Models
+        Generate embeddings using FoundationModels Foundation Models
         
         Args:
             text: The text to embed
@@ -100,8 +100,8 @@ class AppleIntelligenceEmbedder(EmbeddingBase):
             
         Requirements covered:
         - 2.1: Use macOS Foundation Models framework for embedding generation
-        - 2.2: Call Apple Intelligence embedding APIs
-        - 2.3: Use Apple Intelligence embeddings for similarity matching
+        - 2.2: Call FoundationModels embedding APIs
+        - 2.3: Use FoundationModels embeddings for similarity matching
         - 2.5: All processing occurs on-device with no external API calls
         """
         if not text or not text.strip():
@@ -111,7 +111,7 @@ class AppleIntelligenceEmbedder(EmbeddingBase):
         try:
             # Ensure Foundation Models are available
             if not self._foundation_models or not self._foundation_models.is_available:
-                raise AppleIntelligenceUnavailableError("Apple Intelligence Foundation Models are not available")
+                raise AppleIntelligenceUnavailableError("FoundationModels Foundation Models are not available")
             
             # Preprocess text for optimal Neural Engine processing
             processed_text = self._preprocess_text_for_neural_engine(text)
@@ -121,7 +121,7 @@ class AppleIntelligenceEmbedder(EmbeddingBase):
             
             # Log the embedding operation for transparency
             logger.debug(f"Generating embeddings for text (length: {len(processed_text)}) "
-                        f"using Apple Intelligence with action: {memory_action}, type: {embedding_type}")
+                        f"using FoundationModels with action: {memory_action}, type: {embedding_type}")
             
             # Generate embeddings using Foundation Models with Neural Engine optimization
             embeddings = self._foundation_models.generate_embeddings(
@@ -137,17 +137,17 @@ class AppleIntelligenceEmbedder(EmbeddingBase):
             # Validate and normalize embedding dimensions
             embeddings = self._validate_and_normalize_embeddings(embeddings)
             
-            logger.debug(f"Successfully generated {len(embeddings)}-dimensional embeddings using Apple Intelligence")
+            logger.debug(f"Successfully generated {len(embeddings)}-dimensional embeddings using FoundationModels")
             return embeddings
             
         except AppleIntelligenceUnavailableError:
             # Re-raise availability errors with context
-            error_msg = f"Cannot generate embeddings: Apple Intelligence is unavailable"
+            error_msg = f"Cannot generate embeddings: FoundationModels is unavailable"
             logger.error(error_msg)
             raise AppleIntelligenceUnavailableError(error_msg)
             
         except Exception as e:
-            error_msg = f"Error generating embeddings with Apple Intelligence: {str(e)}"
+            error_msg = f"Error generating embeddings with FoundationModels: {str(e)}"
             logger.error(error_msg, exc_info=True)
             raise AppleIntelligenceError(error_msg)
     
@@ -168,7 +168,7 @@ class AppleIntelligenceEmbedder(EmbeddingBase):
         processed_text = text.replace("\n", " ").strip()
         
         # Limit text length for optimal Neural Engine performance
-        # Apple Intelligence works best with reasonably sized text chunks
+        # FoundationModels works best with reasonably sized text chunks
         max_length = 8192  # Reasonable limit for embedding generation
         if len(processed_text) > max_length:
             logger.debug(f"Truncating text from {len(processed_text)} to {max_length} characters for Neural Engine optimization")
@@ -241,13 +241,13 @@ class AppleIntelligenceEmbedder(EmbeddingBase):
     
     def is_available(self) -> bool:
         """
-        Check if Apple Intelligence embeddings are available
+        Check if FoundationModels embeddings are available
         
         Returns:
-            True if Apple Intelligence is available, False otherwise
+            True if FoundationModels is available, False otherwise
             
         Requirements covered:
-        - 2.4: Fail gracefully when Apple Intelligence embeddings are unavailable
+        - 2.4: Fail gracefully when FoundationModels embeddings are unavailable
         """
         try:
             return (self._foundation_models is not None and 
@@ -257,13 +257,13 @@ class AppleIntelligenceEmbedder(EmbeddingBase):
     
     def get_status(self) -> dict:
         """
-        Get the status of the Apple Intelligence embedder
+        Get the status of the FoundationModels embedder
         
         Returns:
             Dictionary with status information
             
         Requirements covered:
-        - 2.4: Fail gracefully when Apple Intelligence embeddings are unavailable
+        - 2.4: Fail gracefully when FoundationModels embeddings are unavailable
         """
         try:
             if self._foundation_models:

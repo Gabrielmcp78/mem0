@@ -142,7 +142,7 @@ class MemoryClient:
         Raises:
             APIError: If the API request fails.
         """
-        # Call Apple Intelligence with user_request and get JSON output
+        # Call FoundationModels with user_request and get JSON output
         # json_output = apple_intelligence_api.generate_json(user_request)
 
         # Create a message dictionary with the JSON output

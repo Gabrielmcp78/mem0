@@ -1,19 +1,12 @@
-version: '3.8'
-
 services:
   mem0-api:
     build:
       context: ../..
       dockerfile: deployment/docker/Dockerfile.production
+    env_file:
+      - ../../.env.production
     ports:
-      - "10000:8000"
-    environment:
-      - POSTGRES_URL=postgresql://mem0:${POSTGRES_PASSWORD}@postgres:5432/mem0
-      - REDIS_URL=redis://redis:6379
-      - QDRANT_URL=http://qdrant:6333
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - ENVIRONMENT=production
-      - LOG_LEVEL=INFO
+      - "18000:8000" # service port exposed via host for proxy and direct checks
     depends_on:
       postgres:
         condition: service_healthy
@@ -39,16 +32,15 @@ services:
 
   postgres:
     image: postgres:15-alpine
+    env_file:
+      - ../../.env.production
     environment:
-      POSTGRES_DB: mem0
-      POSTGRES_USER: mem0
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-mem0}
+      POSTGRES_USER: ${POSTGRES_USER:-mem0}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mem0_secure_password_2024}
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
-      - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
-    command: postgres -c config_file=/etc/postgresql/postgresql.conf
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U mem0 -d mem0"]
@@ -71,7 +63,6 @@ services:
       --maxmemory-policy allkeys-lru
     volumes:
       - redis_data:/data
-      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -87,11 +78,12 @@ services:
   qdrant:
     image: qdrant/qdrant:v1.7.4
     ports:
-      - "10333:6333"
-      - "10334:6334"
+      - "18333:6333" # GREEN: temporary alternate port (was 10333)
+      - "18334:6334" # GREEN: temporary alternate port (was 10334)
     volumes:
       - qdrant_data:/qdrant/storage
-      - ./qdrant/config.yaml:/qdrant/config/production.yaml:ro
+    # If you have a custom config, mount it and keep the env ports aligned
+    # - ./qdrant/config.yaml:/qdrant/config/production.yaml:ro
     environment:
       - QDRANT__SERVICE__HTTP_PORT=6333
       - QDRANT__SERVICE__GRPC_PORT=6334
@@ -114,16 +106,20 @@ services:
       - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./nginx/ssl:/etc/nginx/ssl:ro
       - nginx_logs:/var/log/nginx
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - mem0-api
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      test: ["CMD-SHELL", "wget -qO- http://localhost/health >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+      start_period: 10s
     deploy:
       resources:
         limits:
@@ -133,7 +129,7 @@ services:
   prometheus:
     image: prom/prometheus:latest
     ports:
-      - "10090:9090"
+      - "19090:9090" # GREEN: temporary alternate port (was 10090)
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
@@ -145,19 +141,32 @@ services:
       - '--storage.tsdb.retention.time=200h'
       - '--web.enable-lifecycle'
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   grafana:
     image: grafana/grafana:latest
     ports:
-      - "10300:3000"
+      - "18300:3000"
+    env_file:
+      - ../../.env.production
     volumes:
       - grafana_data:/var/lib/grafana
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
       - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
-      - GF_USERS_ALLOW_SIGN_UP=false
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin_secure_password}
+      GF_USERS_ALLOW_SIGN_UP: "false"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 volumes:
   postgres_data:
@@ -173,9 +182,3 @@ volumes:
   nginx_logs:
     driver: local
 
-networks:
-  default:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16

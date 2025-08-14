@@ -1,12 +1,15 @@
 {
   "name": "gabriel-apple-intelligence-memory-mcp",
-  "version": "1.0.0",
-  "description": "Apple Intelligence Memory MCP Server for Claude Desktop",
-  "main": "server.js",
+  "version": "1.1.0",
+  "description": "FoundationModels Memory MCP Server for Claude Desktop - Modular Architecture",
+  "main": "apple_intelligence_dxt_server.js",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node --inspect server.js"
+    "start": "node apple_intelligence_dxt_server.js",
+    "start:debug": "node apple_intelligence_dxt_debug.js",
+    "start:legacy": "node server.js",
+    "dev": "node --inspect apple_intelligence_dxt_server.js",
+    "test": "echo 'Tests not implemented yet' && exit 0"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.1",

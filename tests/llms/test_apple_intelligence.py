@@ -1,7 +1,7 @@
 """
-Unit tests for Apple Intelligence LLM provider
+Unit tests for FoundationModels LLM provider
 
-This module contains unit tests for the Apple Intelligence LLM provider,
+This module contains unit tests for the FoundationModels LLM provider,
 testing initialization, configuration, and response generation.
 """
 
@@ -23,7 +23,7 @@ from mem0.utils.apple_intelligence import (
 
 
 class TestAppleIntelligenceLlmConfig:
-    """Test Apple Intelligence LLM configuration"""
+    """Test FoundationModels LLM configuration"""
     
     def test_default_config(self):
         """Test default configuration values"""
@@ -91,7 +91,7 @@ class TestAppleIntelligenceLlmConfig:
 
 
 class TestAppleIntelligenceLLM:
-    """Test Apple Intelligence LLM provider"""
+    """Test FoundationModels LLM provider"""
     
     @patch('mem0.llms.apple_intelligence.get_foundation_models_interface')
     def test_initialization_success(self, mock_get_interface):
@@ -114,13 +114,13 @@ class TestAppleIntelligenceLLM:
         # Mock failed interface
         mock_interface = Mock()
         mock_interface.is_available = False
-        mock_interface.error_message = "Apple Intelligence not available"
+        mock_interface.error_message = "FoundationModels not available"
         mock_get_interface.return_value = mock_interface
         
         llm = AppleIntelligenceLLM()
         
         assert llm.is_available is False
-        assert "Apple Intelligence not available" in llm.error_message
+        assert "FoundationModels not available" in llm.error_message
     
     @patch('mem0.llms.apple_intelligence.get_foundation_models_interface')
     def test_custom_config_initialization(self, mock_get_interface):
@@ -148,7 +148,7 @@ class TestAppleIntelligenceLLM:
         # Mock successful interface
         mock_interface = Mock()
         mock_interface.is_available = True
-        mock_interface.generate_text.return_value = "Test response from Apple Intelligence"
+        mock_interface.generate_text.return_value = "Test response from FoundationModels"
         mock_get_interface.return_value = mock_interface
         
         llm = AppleIntelligenceLLM()
@@ -159,16 +159,16 @@ class TestAppleIntelligenceLLM:
         
         response = llm.generate_response(messages)
         
-        assert response == "Test response from Apple Intelligence"
+        assert response == "Test response from FoundationModels"
         mock_interface.generate_text.assert_called_once()
     
     @patch('mem0.llms.apple_intelligence.get_foundation_models_interface')
     def test_generate_response_unavailable(self, mock_get_interface):
-        """Test response generation when Apple Intelligence unavailable"""
+        """Test response generation when FoundationModels unavailable"""
         # Mock unavailable interface
         mock_interface = Mock()
         mock_interface.is_available = False
-        mock_interface.error_message = "Apple Intelligence not available"
+        mock_interface.error_message = "FoundationModels not available"
         mock_get_interface.return_value = mock_interface
         
         llm = AppleIntelligenceLLM()
@@ -204,7 +204,7 @@ class TestAppleIntelligenceLLM:
     
     @patch('mem0.llms.apple_intelligence.get_foundation_models_interface')
     def test_message_formatting(self, mock_get_interface):
-        """Test message formatting for Apple Intelligence"""
+        """Test message formatting for FoundationModels"""
         # Mock successful interface
         mock_interface = Mock()
         mock_interface.is_available = True

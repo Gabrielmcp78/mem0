@@ -1,7 +1,7 @@
 """
-Apple Intelligence LLM Provider
+FoundationModels LLM Provider
 
-This module implements the Apple Intelligence LLM provider for mem0,
+This module implements the FoundationModels LLM provider for mem0,
 using macOS Foundation Models framework for local on-device text generation.
 """
 
@@ -26,35 +26,35 @@ logger = logging.getLogger(__name__)
 
 class AppleIntelligenceLLM(LLMBase):
     """
-    Apple Intelligence LLM provider using Foundation Models framework
+    FoundationModels LLM provider using Foundation Models framework
     
-    This class implements the LLMBase interface to provide Apple Intelligence
+    This class implements the LLMBase interface to provide FoundationModels
     text generation capabilities for mem0 memory operations.
     
     Requirements covered:
     - 1.1: Use macOS Foundation Models framework for text generation
-    - 1.2: Call Apple Intelligence APIs for fact extraction
-    - 1.3: Use Apple Intelligence text generation capabilities
+    - 1.2: Call FoundationModels APIs for fact extraction
+    - 1.3: Use FoundationModels text generation capabilities
     - 1.4: Fail gracefully with clear error messages when unavailable
     - 1.5: Ensure all processing occurs on-device with no external API calls
     """
     
     def __init__(self, config: Optional[BaseLlmConfig] = None):
         """
-        Initialize Apple Intelligence LLM provider
+        Initialize FoundationModels LLM provider
         
         Args:
             config: LLM configuration, defaults to AppleIntelligenceLLMConfig
             
         Requirements covered:
         - 1.1: Use macOS Foundation Models framework for text generation
-        - 1.4: Fail gracefully when Apple Intelligence is unavailable
+        - 1.4: Fail gracefully when FoundationModels is unavailable
         """
-        # Use Apple Intelligence specific config if none provided
+        # Use FoundationModels specific config if none provided
         if config is None:
             config = AppleIntelligenceLlmConfig()
         elif not isinstance(config, AppleIntelligenceLlmConfig):
-            # Convert generic config to Apple Intelligence config
+            # Convert generic config to FoundationModels config
             config = AppleIntelligenceLlmConfig(
                 model=getattr(config, 'model', 'apple-intelligence-foundation'),
                 temperature=getattr(config, 'temperature', 0.3),
@@ -79,7 +79,7 @@ class AppleIntelligenceLLM(LLMBase):
     
     def _initialize_apple_intelligence(self) -> None:
         """
-        Initialize Apple Intelligence Foundation Models interface
+        Initialize FoundationModels Foundation Models interface
         
         Requirements covered:
         - 1.1: Use macOS Foundation Models framework for text generation
@@ -91,43 +91,43 @@ class AppleIntelligenceLLM(LLMBase):
             
             if self._foundation_interface.is_available:
                 self._is_available = True
-                logger.info(f"Apple Intelligence LLM initialized with model: {self.config.model}")
+                logger.info(f"FoundationModels LLM initialized with model: {self.config.model}")
                 logger.info("All text generation will occur on-device using Foundation Models")
             else:
                 self._error_message = (
                     self._foundation_interface.error_message or 
-                    "Apple Intelligence Foundation Models are not available"
+                    "FoundationModels Foundation Models are not available"
                 )
-                logger.warning(f"Apple Intelligence LLM initialization failed: {self._error_message}")
+                logger.warning(f"FoundationModels LLM initialization failed: {self._error_message}")
                 
                 # Check if fallback is configured
                 if hasattr(self.config, 'fallback_provider') and self.config.fallback_provider:
                     logger.info(f"Fallback provider configured: {self.config.fallback_provider}")
                 
         except Exception as e:
-            self._error_message = f"Error initializing Apple Intelligence LLM: {str(e)}"
+            self._error_message = f"Error initializing FoundationModels LLM: {str(e)}"
             logger.error(self._error_message, exc_info=True)
     
     def _ensure_available(self) -> None:
         """
-        Ensure Apple Intelligence is available, raise exception if not
+        Ensure FoundationModels is available, raise exception if not
         
         Requirements covered:
         - 1.4: Fail gracefully with clear error messages when unavailable
         """
         if not self._is_available:
-            error_msg = self._error_message or "Apple Intelligence LLM is not available"
+            error_msg = self._error_message or "FoundationModels LLM is not available"
             raise AppleIntelligenceUnavailableError(error_msg)
     
     def _format_messages_for_apple_intelligence(self, messages: List[Dict[str, str]]) -> str:
         """
-        Format messages for Apple Intelligence processing
+        Format messages for FoundationModels processing
         
         Args:
             messages: List of message dictionaries with 'role' and 'content'
             
         Returns:
-            Formatted prompt string for Apple Intelligence
+            Formatted prompt string for FoundationModels
         """
         # Convert messages to a single prompt string
         prompt_parts = []
@@ -152,8 +152,8 @@ class AppleIntelligenceLLM(LLMBase):
         Apply direct fixes for mem0 operation responses
         
         Args:
-            prompt: The original prompt sent to Apple Intelligence
-            response: The raw response from Apple Intelligence
+            prompt: The original prompt sent to FoundationModels
+            response: The raw response from FoundationModels
             
         Returns:
             Fixed response for mem0 operations
@@ -235,7 +235,7 @@ class AppleIntelligenceLLM(LLMBase):
         Ensure the response is valid JSON format for mem0 operations
         
         Args:
-            response: Raw response from Apple Intelligence
+            response: Raw response from FoundationModels
             
         Returns:
             Cleaned JSON response
@@ -333,10 +333,10 @@ class AppleIntelligenceLLM(LLMBase):
     
     def _parse_response(self, response: str, tools: Optional[List[Dict]] = None) -> Any:
         """
-        Parse the response from Apple Intelligence
+        Parse the response from FoundationModels
         
         Args:
-            response: Raw response from Apple Intelligence
+            response: Raw response from FoundationModels
             tools: List of tools (for future tool calling support)
             
         Returns:
@@ -360,7 +360,7 @@ class AppleIntelligenceLLM(LLMBase):
         **kwargs
     ) -> Any:
         """
-        Generate a response using Apple Intelligence Foundation Models
+        Generate a response using FoundationModels Foundation Models
         
         Args:
             messages: List of message dicts containing 'role' and 'content'
@@ -374,19 +374,19 @@ class AppleIntelligenceLLM(LLMBase):
             
         Requirements covered:
         - 1.1: Use macOS Foundation Models framework for text generation
-        - 1.2: Call Apple Intelligence APIs for fact extraction
-        - 1.3: Use Apple Intelligence text generation capabilities
+        - 1.2: Call FoundationModels APIs for fact extraction
+        - 1.3: Use FoundationModels text generation capabilities
         - 1.4: Fail gracefully with clear error messages when unavailable
         - 1.5: Ensure all processing occurs on-device with no external API calls
         """
-        # Ensure Apple Intelligence is available
+        # Ensure FoundationModels is available
         self._ensure_available()
         
         try:
             # Log the operation for transparency
-            logger.info("Generating response using Apple Intelligence Foundation Models (local processing)")
+            logger.info("Generating response using FoundationModels Foundation Models (local processing)")
             
-            # Format messages for Apple Intelligence
+            # Format messages for FoundationModels
             prompt = self._format_messages_for_apple_intelligence(messages)
             
             # Handle JSON format requests with specific mem0 instruction
@@ -435,7 +435,7 @@ RESPOND WITH ONLY THIS JSON FORMAT. NO EXPLANATIONS. NO MARKDOWN. JUST JSON."""
                 'top_k': kwargs.get('top_k', self.config.top_k),
             }
             
-            # Add Apple Intelligence specific parameters
+            # Add FoundationModels specific parameters
             if hasattr(self.config, 'enable_neural_engine'):
                 generation_params['enable_neural_engine'] = self.config.enable_neural_engine
             if hasattr(self.config, 'privacy_mode'):
@@ -451,7 +451,7 @@ RESPOND WITH ONLY THIS JSON FORMAT. NO EXPLANATIONS. NO MARKDOWN. JUST JSON."""
                 response = self._ensure_json_format(response)
             
             # Log successful generation
-            logger.info("Response generated successfully using Apple Intelligence (on-device)")
+            logger.info("Response generated successfully using FoundationModels (on-device)")
             
             # Parse and return response
             return self._parse_response(response, tools)
@@ -460,23 +460,23 @@ RESPOND WITH ONLY THIS JSON FORMAT. NO EXPLANATIONS. NO MARKDOWN. JUST JSON."""
             # Re-raise availability errors
             raise
         except Exception as e:
-            error_msg = f"Error generating response with Apple Intelligence: {str(e)}"
+            error_msg = f"Error generating response with FoundationModels: {str(e)}"
             logger.error(error_msg, exc_info=True)
             raise AppleIntelligenceError(error_msg)
     
     @property
     def is_available(self) -> bool:
-        """Check if Apple Intelligence LLM is available"""
+        """Check if FoundationModels LLM is available"""
         return self._is_available
     
     @property
     def error_message(self) -> Optional[str]:
-        """Get error message if Apple Intelligence is unavailable"""
+        """Get error message if FoundationModels is unavailable"""
         return self._error_message
     
     def get_model_info(self) -> Dict[str, Any]:
         """
-        Get information about the Apple Intelligence model
+        Get information about the FoundationModels model
         
         Returns:
             Dictionary with model information
@@ -502,7 +502,7 @@ RESPOND WITH ONLY THIS JSON FORMAT. NO EXPLANATIONS. NO MARKDOWN. JUST JSON."""
 # Convenience function for easy instantiation
 def create_apple_intelligence_llm(config: Optional[Dict[str, Any]] = None) -> AppleIntelligenceLLM:
     """
-    Create an Apple Intelligence LLM instance
+    Create an FoundationModels LLM instance
     
     Args:
         config: Optional configuration dictionary
@@ -521,7 +521,7 @@ def create_apple_intelligence_llm(config: Optional[Dict[str, Any]] = None) -> Ap
 # Check availability function for external use
 def is_apple_intelligence_llm_available() -> bool:
     """
-    Check if Apple Intelligence LLM is available
+    Check if FoundationModels LLM is available
     
     Returns:
         True if available, False otherwise

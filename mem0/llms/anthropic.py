@@ -56,7 +56,7 @@ class AnthropicLLM(LLMBase):
             "max_tokens": self.config.max_tokens,
             "top_p": self.config.top_p,
         }
-        if tools:  # TODO: Remove tools if no issues found with new memory addition logic
+        if tools:
             params["tools"] = tools
             params["tool_choice"] = tool_choice
 

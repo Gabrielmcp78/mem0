@@ -12,7 +12,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 async function testServer() {
-  console.log('🧪 Testing Native Node.js Apple Intelligence MCP Server');
+  console.log('🧪 Testing Native Node.js FoundationModels MCP Server');
   console.log('=' * 60);
 
   const serverPath = join(__dirname, 'native_node_server.js');

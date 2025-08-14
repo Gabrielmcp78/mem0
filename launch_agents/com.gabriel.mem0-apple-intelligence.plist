@@ -4,14 +4,31 @@
 <dict>
     <key>Label</key>
     <string>com.gabriel.mem0-apple-intelligence</string>
-    
+
     <key>ProgramArguments</key>
     <array>
+        <string>/usr/bin/env</string>
         <string>node</string>
-        <string>/Volumes/Ready500/DEVELOPMENT/mem0/integrations/mcp/native_node_server.js</string>
+        <string>/Volumes/Ready500/DEVELOPMENT/mem0/integrations/mcp/mem0_native_node_server.cjs</string>
     </array>
-    
-    <!-- Auto-start and keep alive -->
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>QDRANT_URL</key>
+        <string>http://localhost:10333</string>
+        <key>QDRANT_COLLECTION</key>
+        <string>gabriel_apple_intelligence_memories</string>
+        <key>APPLE_INTELLIGENCE_ENABLED</key>
+        <string>true</string>
+        <key>LOG_LEVEL</key>
+        <string>INFO</string>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/Applications/Docker.app/Contents/Resources/bin</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+
     <key>KeepAlive</key>
     <dict>
         <key>SuccessfulExit</key>
@@ -19,37 +36,18 @@
         <key>Crashed</key>
         <true/>
     </dict>
-    
-    <key>RunAtLoad</key>
-    <true/>
-    
-    <!-- Restart behavior -->
+
     <key>ThrottleInterval</key>
-    <integer>10</integer>    
-    <!-- Environment -->
-    <key>EnvironmentVariables</key>
-    <dict>
-        <key>QDRANT_URL</key>
-        <string>http://localhost:6333</string>
-        <key>QDRANT_COLLECTION</key>
-        <string>gabriel_apple_intelligence_memories</string>
-        <key>APPLE_INTELLIGENCE_ENABLED</key>
-        <string>true</string>
-        <key>LOG_LEVEL</key>
-        <string>INFO</string>
-    </dict>
-    
-    <!-- Logging -->
+    <integer>10</integer>
+
+    <key>WorkingDirectory</key>
+    <string>/Volumes/Ready500/DEVELOPMENT/mem0</string>
+
     <key>StandardOutPath</key>
     <string>/tmp/mem0-apple-intelligence.log</string>
     <key>StandardErrorPath</key>
     <string>/tmp/mem0-apple-intelligence-error.log</string>
-    
-    <!-- Working directory -->
-    <key>WorkingDirectory</key>
-    <string>/Volumes/Ready500/DEVELOPMENT/mem0</string>
-    
-    <!-- Resource limits -->
+
     <key>SoftResourceLimits</key>
     <dict>
         <key>NumberOfFiles</key>

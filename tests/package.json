@@ -1,0 +1,22 @@
+{
+  "name": "mem0-mcp-tests",
+  "version": "1.0.0",
+  "description": "MCP Server Testing Framework for Mem0",
+  "main": "run_tests.js",
+  "scripts": {
+    "test": "node ../run_tests.js",
+    "test:quick": "node ../run_tests.js quick",
+    "test:apple": "node ../run_tests.js apple-intelligence",
+    "test:debug": "node ../run_tests.js all --debug",
+    "test:minimal": "node ../run_tests.js all --minimal",
+    "test:performance": "node ../run_tests.js all --performance"
+  },
+  "keywords": ["mcp", "testing", "mem0", "apple-intelligence"],
+  "author": "Gabriel",
+  "license": "Apache-2.0",
+  "dependencies": {},
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -3,7 +3,6 @@ from typing import Any, Dict
 from pydantic import BaseModel, Field, model_validator
 
 
-# TODO: Upgrade to latest pydantic version
 class RedisDBConfig(BaseModel):
     redis_url: str = Field(..., description="Redis URL")
     collection_name: str = Field("mem0", description="Collection name")

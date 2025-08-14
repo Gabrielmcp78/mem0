@@ -1,5 +1,5 @@
 """
-Unit tests for Apple Intelligence Foundation Models interface
+Unit tests for FoundationModels Foundation Models interface
 """
 
 import unittest
@@ -119,7 +119,7 @@ class TestFoundationModelsInterface(unittest.TestCase):
         if interface.is_available:
             response = interface.generate_text("Test prompt")
             self.assertIsInstance(response, str)
-            self.assertIn("Apple Intelligence Response", response)
+            self.assertIn("FoundationModels Response", response)
     
     @patch('platform.system')
     @patch('platform.mac_ver')
@@ -184,15 +184,15 @@ class TestFoundationModelsInterface(unittest.TestCase):
 
 
 class TestAppleIntelligenceErrors(unittest.TestCase):
-    """Test cases for Apple Intelligence error handling"""
+    """Test cases for FoundationModels error handling"""
     
     def test_apple_intelligence_error(self):
-        """Test base Apple Intelligence error"""
+        """Test base FoundationModels error"""
         error = AppleIntelligenceError("Test error")
         self.assertEqual(str(error), "Test error")
     
     def test_apple_intelligence_unavailable_error(self):
-        """Test Apple Intelligence unavailable error"""
+        """Test FoundationModels unavailable error"""
         error = AppleIntelligenceUnavailableError("Not available")
         self.assertEqual(str(error), "Not available")
         self.assertIsInstance(error, AppleIntelligenceError)

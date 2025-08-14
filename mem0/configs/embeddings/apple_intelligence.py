@@ -1,7 +1,7 @@
 """
-Apple Intelligence Embedding Configuration
+FoundationModels Embedding Configuration
 
-This module provides configuration classes for Apple Intelligence embedding provider.
+This module provides configuration classes for FoundationModels embedding provider.
 """
 
 from typing import Optional
@@ -10,9 +10,9 @@ from mem0.configs.embeddings.base import BaseEmbedderConfig
 
 class AppleIntelligenceEmbedderConfig(BaseEmbedderConfig):
     """
-    Configuration class for Apple Intelligence embedding provider
+    Configuration class for FoundationModels embedding provider
     
-    This class extends BaseEmbedderConfig with Apple Intelligence specific options
+    This class extends BaseEmbedderConfig with FoundationModels specific options
     for Foundation Models integration.
     """
     
@@ -29,16 +29,16 @@ class AppleIntelligenceEmbedderConfig(BaseEmbedderConfig):
         **kwargs
     ):
         """
-        Initialize Apple Intelligence embedding configuration
+        Initialize FoundationModels embedding configuration
         
         Args:
-            model: Apple Intelligence embedding model identifier
+            model: FoundationModels embedding model identifier
             embedding_dims: Dimension of the embedding vectors (default: 1536)
             enable_neural_engine: Whether to use Neural Engine optimization
             privacy_mode: Privacy level (strict, moderate, open)
             batch_size: Number of texts to process in a single batch
             normalize_embeddings: Whether to normalize embedding vectors
-            fallback_provider: Fallback provider if Apple Intelligence unavailable
+            fallback_provider: Fallback provider if FoundationModels unavailable
             foundation_model_version: Specific Foundation Models version to use
             **kwargs: Additional configuration options passed to BaseEmbedderConfig
         """
@@ -48,7 +48,7 @@ class AppleIntelligenceEmbedderConfig(BaseEmbedderConfig):
             **kwargs
         )
         
-        # Apple Intelligence specific configuration
+        # FoundationModels specific configuration
         self.enable_neural_engine = enable_neural_engine
         self.privacy_mode = privacy_mode
         self.batch_size = batch_size

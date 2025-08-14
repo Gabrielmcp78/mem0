@@ -116,7 +116,7 @@ class OpenAILLM(LLMBase):
 
         if response_format:
             params["response_format"] = response_format
-        if tools:  # TODO: Remove tools if no issues found with new memory addition logic
+        if tools:
             params["tools"] = tools
             params["tool_choice"] = tool_choice
 

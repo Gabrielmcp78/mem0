@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://mem0.ai/schemas/mcp-config-apple-intelligence.json",
-  "title": "Mem0 MCP Server Configuration with Apple Intelligence",
-  "description": "JSON schema for configuring the Mem0 MCP server with Apple Intelligence Foundation Models support in Claude Desktop",
+  "title": "Mem0 MCP Server Configuration with FoundationModels",
+  "description": "JSON schema for configuring the Mem0 MCP server with FoundationModels Foundation Models support in Claude Desktop",
   "type": "object",
   "properties": {
     "mcpServers": {
@@ -11,7 +11,7 @@
       "properties": {
         "gabriel-apple-intelligence-memory": {
           "type": "object",
-          "description": "Mem0 memory server with Apple Intelligence Foundation Models",
+          "description": "Mem0 memory server with FoundationModels Foundation Models",
           "properties": {
             "command": {
               "type": "string",
@@ -39,11 +39,11 @@
             },
             "env": {
               "type": "object",
-              "description": "Environment variables for the Apple Intelligence server",
+              "description": "Environment variables for the FoundationModels server",
               "properties": {
                 "QDRANT_URL": {
                   "type": "string",
-                  "description": "Qdrant vector database URL (optional for Apple Intelligence)",
+                  "description": "Qdrant vector database URL (optional for FoundationModels)",
                   "format": "uri",
                   "default": "http://localhost:6333",
                   "examples": [
@@ -58,14 +58,14 @@
                 },
                 "QDRANT_COLLECTION": {
                   "type": "string",
-                  "description": "Qdrant collection name for Apple Intelligence memories",
+                  "description": "Qdrant collection name for FoundationModels memories",
                   "default": "gabriel_apple_intelligence_memories",
                   "pattern": "^[a-zA-Z0-9_-]+$",
                   "examples": ["gabriel_apple_intelligence_memories", "claude_ai_memories"]
                 },
                 "APPLE_INTELLIGENCE_ENABLED": {
                   "type": "string",
-                  "description": "Enable Apple Intelligence Foundation Models (auto-detects by default)",
+                  "description": "Enable FoundationModels Foundation Models (auto-detects by default)",
                   "default": "auto",
                   "enum": ["true", "false", "auto"],
                   "examples": ["true", "auto"]
@@ -83,13 +83,13 @@
                 },
                 "OPENAI_API_KEY": {
                   "type": "string",
-                  "description": "OpenAI API key (fallback when Apple Intelligence unavailable)",
+                  "description": "OpenAI API key (fallback when FoundationModels unavailable)",
                   "pattern": "^sk-[a-zA-Z0-9]{48}$",
                   "examples": ["sk-your-openai-api-key-here"]
                 },
                 "OLLAMA_URL": {
                   "type": "string",
-                  "description": "Ollama server URL (fallback when Apple Intelligence unavailable)",
+                  "description": "Ollama server URL (fallback when FoundationModels unavailable)",
                   "format": "uri",
                   "default": "http://localhost:11434",
                   "examples": ["http://localhost:11434"]
@@ -210,7 +210,7 @@
         },
         "mem0-memory-legacy": {
           "type": "object",
-          "description": "Legacy Mem0 memory server configuration (for non-Apple Intelligence systems)",
+          "description": "Legacy Mem0 memory server configuration (for non-FoundationModels systems)",
           "properties": {
             "command": {
               "type": "string",

@@ -1,20 +1,20 @@
-# Mem0 MCP Server with Apple Intelligence
+# Mem0 MCP Server with FoundationModels
 
-🍎 **Apple Intelligence Integration Complete!** Model Context Protocol (MCP) server for Mem0 memory operations with native Apple Intelligence Foundation Models support, providing seamless integration with Claude Desktop and Kiro IDE.
+🍎 **FoundationModels Integration Complete!** Model Context Protocol (MCP) server for Mem0 memory operations with native FoundationModels Foundation Models support, providing seamless integration with Claude Desktop and Kiro IDE.
 
-## ✅ What's New - Apple Intelligence Integration
+## ✅ What's New - FoundationModels Integration
 
-- **🍎 Native Apple Intelligence**: Complete on-device processing with Foundation Models
+- **🍎 Native FoundationModels**: Complete on-device processing with Foundation Models
 - **🧠 Neural Engine Optimization**: Leverages Apple's Neural Engine for optimal performance  
 - **🔒 Privacy First**: Zero external API calls - everything processed locally on-device
-- **⚡ Automatic Detection**: Seamlessly detects and uses Apple Intelligence when available
-- **🔄 Graceful Fallback**: Falls back to default providers if Apple Intelligence unavailable
+- **⚡ Automatic Detection**: Seamlessly detects and uses FoundationModels when available
+- **🔄 Graceful Fallback**: Falls back to default providers if FoundationModels unavailable
 
 ## 🚀 Quick Start
 
 ### 1. System Requirements
 
-**For Apple Intelligence (Recommended)**:
+**For FoundationModels (Recommended)**:
 - macOS 15.1 or later
 - Apple Silicon (M1, M2, M3, M4)
 - PyObjC for Foundation Models access
@@ -31,11 +31,11 @@ pip install mem0ai mcp pyobjc
 npm install
 ```
 
-### 3. Verify Apple Intelligence
+### 3. Verify FoundationModels
 
 ```bash
-# Test Apple Intelligence availability
-python -c "from mem0.utils.apple_intelligence import check_apple_intelligence_availability; print(f'🍎 Apple Intelligence Available: {check_apple_intelligence_availability()}')"
+# Test FoundationModels availability
+python -c "from mem0.utils.apple_intelligence import check_apple_intelligence_availability; print(f'🍎 FoundationModels Available: {check_apple_intelligence_availability()}')"
 ```
 
 ### 4. Configure Claude Desktop
@@ -71,11 +71,34 @@ Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/
 }
 ```
 
-### 5. Start the System
+### 5. Automated Setup with Launch Agents (macOS)
+
+For automatic startup and management of services:
 
 ```bash
-# Start Qdrant (if using vector storage)
-docker run -p 6333:6333 qdrant/qdrant
+# Install launch agents (auto-detects repo path)
+bash scripts/install_launch_agents.sh
+
+# Test the setup
+bash scripts/test_launch_agents.sh
+
+# Check status
+launchctl list | grep mem0
+```
+
+**What this sets up:**
+- **com.gabriel.mem0-services**: Automatically starts Docker containers (Qdrant, Neo4j)
+- **com.gabriel.mem0-apple-intelligence**: Runs the MCP server with FoundationModels
+
+**Logs location:** `/tmp/mem0-*.log`
+
+### 6. Manual Setup
+
+If you prefer manual control:
+
+```bash
+# Start services manually
+bash start_mem0_services.sh
 
 # Start Python MCP server (recommended)
 python integrations/mcp/server.py
@@ -84,11 +107,11 @@ python integrations/mcp/server.py
 node integrations/mcp/server.js
 ```
 
-## 🍎 Apple Intelligence Features
+## 🍎 FoundationModels Features
 
 ### Automatic Configuration
 
-When Apple Intelligence is available, the server automatically configures:
+When FoundationModels is available, the server automatically configures:
 
 ```python
 config = {
@@ -114,7 +137,7 @@ config = {
 
 ### Status Verification
 
-Use the `test_connection` tool to verify Apple Intelligence status:
+Use the `test_connection` tool to verify FoundationModels status:
 
 ```json
 {
@@ -126,7 +149,7 @@ Use the `test_connection` tool to verify Apple Intelligence status:
     "llm": "apple_intelligence",
     "embedder": "apple_intelligence"
   },
-  "message": "Gabriel's local memory system with Apple Intelligence Foundation Models is online and ready!"
+  "message": "Gabriel's local memory system with FoundationModels Foundation Models is online and ready!"
 }
 ```
 
@@ -134,13 +157,13 @@ Use the `test_connection` tool to verify Apple Intelligence status:
 
 ### Core Memory Operations
 
-All tools now use Apple Intelligence for processing:
+All tools now use FoundationModels for processing:
 
-- **`test_connection`**: Test server connectivity and Apple Intelligence status
-- **`add_memory`**: Store new memories with Apple Intelligence processing
-- **`search_memories`**: Search memories using Apple Intelligence embeddings  
+- **`test_connection`**: Test server connectivity and FoundationModels status
+- **`add_memory`**: Store new memories with FoundationModels processing
+- **`search_memories`**: Search memories using FoundationModels embeddings  
 - **`get_all_memories`**: Retrieve all memories for a user
-- **`update_memory`**: Update existing memories with Apple Intelligence
+- **`update_memory`**: Update existing memories with FoundationModels
 - **`delete_memory`**: Delete specific memories
 - **`delete_all_memories`**: Clear all memories for a user
 - **`get_memory_history`**: View memory operation history
@@ -153,7 +176,7 @@ All tools support multi-agent scenarios:
 - **`run_id`**: Session/run identifier for context tracking
 - **`metadata`**: Custom metadata as JSON string
 
-Apple Intelligence processing metadata is automatically added:
+FoundationModels processing metadata is automatically added:
 ```json
 {
   "processed_by": "apple_intelligence_foundation_models",
@@ -166,24 +189,24 @@ Apple Intelligence processing metadata is automatically added:
 ### Python Server
 
 - **File**: `server.py`
-- **Features**: Full Apple Intelligence integration, direct mem0 API access
+- **Features**: Full FoundationModels integration, direct mem0 API access
 - **Best for**: Kiro IDE, direct MCP clients, development testing
-- **Apple Intelligence**: ✅ Native support
+- **FoundationModels**: ✅ Native support
 
 ### Node.js Server (Recommended for Claude Desktop) ⭐
 
 - **File**: `server.js`  
-- **Features**: MCP protocol wrapper that calls Python memory operations with Apple Intelligence backend
+- **Features**: MCP protocol wrapper that calls Python memory operations with FoundationModels backend
 - **Best for**: Claude Desktop integration, web applications, Node.js environments
-- **Apple Intelligence**: ✅ Via Python backend
+- **FoundationModels**: ✅ Via Python backend
 - **Compatibility**: ✅ Optimized for Claude Desktop MCP protocol
 
 ### Kiro Server
 
 - **File**: `kiro_server.py`
-- **Features**: Project-aware memory management with Apple Intelligence
+- **Features**: Project-aware memory management with FoundationModels
 - **Best for**: Kiro IDE integration
-- **Apple Intelligence**: ✅ Native support
+- **FoundationModels**: ✅ Native support
 
 ## ⚙️ Configuration
 
@@ -191,12 +214,12 @@ Apple Intelligence processing metadata is automatically added:
 
 - **`QDRANT_URL`**: Qdrant vector database URL (optional)
 - **`QDRANT_COLLECTION`**: Collection name for memories (default: "gabriel_apple_intelligence_memories")
-- **`APPLE_INTELLIGENCE_ENABLED`**: Enable/disable Apple Intelligence (default: auto-detect)
+- **`APPLE_INTELLIGENCE_ENABLED`**: Enable/disable FoundationModels (default: auto-detect)
 - **`LOG_LEVEL`**: Logging level (DEBUG, INFO, WARNING, ERROR)
 
-### Apple Intelligence Settings
+### FoundationModels Settings
 
-The system automatically optimizes for Apple Intelligence:
+The system automatically optimizes for FoundationModels:
 - **Neural Engine**: Enabled by default for optimal performance
 - **Privacy Mode**: Strict mode ensures no external API calls
 - **Local Processing**: All operations occur on-device
@@ -207,7 +230,7 @@ The system automatically optimizes for Apple Intelligence:
 ### Comprehensive Test Suite
 
 ```bash
-# Test Apple Intelligence integration
+# Test FoundationModels integration
 python test_apple_intelligence_mcp_integration.py
 
 # Test MCP server functionality  
@@ -223,17 +246,17 @@ python test_python_mcp_server.py
 ### Expected Test Results
 
 ```
-🍎 Apple Intelligence Available: True
+🍎 FoundationModels Available: True
 ✅ LLM Provider: AppleIntelligenceLLM (Available: True)
 ✅ Embedder Provider: AppleIntelligenceEmbedder (Available: True)
-✅ Memory initialized with Apple Intelligence: True
-✅ Python MCP Server with Apple Intelligence: True
+✅ Memory initialized with FoundationModels: True
+✅ Python MCP Server with FoundationModels: True
 ✅ All tests passed!
 ```
 
 ## 🔧 Troubleshooting
 
-### Apple Intelligence Issues
+### FoundationModels Issues
 
 1. **Check System Requirements**:
 ```bash
@@ -249,29 +272,29 @@ uname -m  # Should show: arm64
 # Test PyObjC installation
 python -c "import objc; print('✅ PyObjC available')"
 
-# Test Apple Intelligence availability
+# Test FoundationModels availability
 python -c "from mem0.utils.apple_intelligence import check_apple_intelligence_availability; print(f'🍎 Available: {check_apple_intelligence_availability()}')"
 ```
 
 3. **Check Server Logs**:
 ```bash
-# Look for Apple Intelligence status messages
-python server.py 2>&1 | grep -E "(Apple Intelligence|Foundation Models)"
+# Look for FoundationModels status messages
+python server.py 2>&1 | grep -E "(FoundationModels|Foundation Models)"
 ```
 
 ### Common Solutions
 
 | Issue | Solution |
 |-------|----------|
-| "Apple Intelligence not available" | Ensure macOS 15.1+ and Apple Silicon |
+| "FoundationModels not available" | Ensure macOS 15.1+ and Apple Silicon |
 | "PyObjC not found" | Install with `pip install pyobjc` |
 | Memory operations fail | Check Qdrant connection and configuration |
 | Claude Desktop connection issues | Verify MCP configuration and file paths |
-| Fallback providers used | Check Apple Intelligence availability and logs |
+| Fallback providers used | Check FoundationModels availability and logs |
 
 ## 📊 Performance & Privacy
 
-### Apple Intelligence Benefits
+### FoundationModels Benefits
 
 - **🚀 Performance**: Neural Engine optimization for faster processing
 - **🔒 Privacy**: Complete on-device processing, no external API calls
@@ -283,9 +306,9 @@ python server.py 2>&1 | grep -E "(Apple Intelligence|Foundation Models)"
 
 The system provides detailed logging:
 ```
-🍎 Apple Intelligence Foundation Models detected and available
-✅ Memory initialized with real Apple Intelligence Foundation Model providers
-🍎 Apple Intelligence Memory system ready for MCP operations with Foundation Models
+🍎 FoundationModels Foundation Models detected and available
+✅ Memory initialized with real FoundationModels Foundation Model providers
+🍎 FoundationModels Memory system ready for MCP operations with Foundation Models
 ```
 
 ## 🚀 Production Deployment
@@ -321,7 +344,7 @@ For Kiro IDE, use the Python server directly:
 
 ## 📚 Documentation & Support
 
-- **🍎 Apple Intelligence Guide**: [Apple Intelligence Integration](APPLE_INTELLIGENCE_INTEGRATION.md)
+- **🍎 FoundationModels Guide**: [FoundationModels Integration](APPLE_INTELLIGENCE_INTEGRATION.md)
 - **📖 Full Documentation**: [docs.mem0.ai/integrations/mcp](https://docs.mem0.ai/integrations/mcp)
 - **🐛 Issues**: [GitHub Issues](https://github.com/mem0ai/mem0/issues)
 - **💬 Community**: [Discord](https://mem0.dev/DiG)
@@ -329,11 +352,11 @@ For Kiro IDE, use the Python server directly:
 
 ## 🎉 What's Next
 
-The Apple Intelligence integration is complete and ready for production use! Future enhancements are tracked in [FUTURE_FEATURES.md](../../FUTURE_FEATURES.md) and include:
+The FoundationModels integration is complete and ready for production use! Future enhancements are tracked in [FUTURE_FEATURES.md](../../FUTURE_FEATURES.md) and include:
 
 - Enhanced unit testing
 - Performance optimizations
 - Additional privacy features
 - Chrome extension integration
 
-**Start using Apple Intelligence with Mem0 today!** 🚀
+**Start using FoundationModels with Mem0 today!** 🚀

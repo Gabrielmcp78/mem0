@@ -45,19 +45,19 @@ class KiroMemoryServer:
         self._register_resources()
     
     def _setup_memory(self):
-        """Initialize Mem0 with Apple Intelligence configuration"""
+        """Initialize Mem0 with FoundationModels configuration"""
         try:
-            # Import Apple Intelligence utilities for availability checking
+            # Import FoundationModels utilities for availability checking
             from mem0.utils.apple_intelligence import check_apple_intelligence_availability, get_apple_intelligence_status
             
-            # Check Apple Intelligence availability first
+            # Check FoundationModels availability first
             apple_intelligence_available = check_apple_intelligence_availability()
             status = get_apple_intelligence_status()
             
             if apple_intelligence_available:
-                logger.info("🍎 Apple Intelligence Foundation Models detected for Kiro")
+                logger.info("🍎 FoundationModels Foundation Models detected for Kiro")
                 
-                # Configure Mem0 to use Apple Intelligence providers
+                # Configure Mem0 to use FoundationModels providers
                 config_dict = {
                     "llm": {
                         "provider": "apple_intelligence",
@@ -88,11 +88,11 @@ class KiroMemoryServer:
                 
                 config = Config.from_dict(config_dict)
                 self.memory = Memory(config=config)
-                logger.info("✅ Kiro memory system initialized with Apple Intelligence")
+                logger.info("✅ Kiro memory system initialized with FoundationModels")
                 
             else:
                 # Fallback to Ollama configuration
-                logger.warning(f"⚠️ Apple Intelligence unavailable for Kiro: {status.get('error_message', 'unknown error')}")
+                logger.warning(f"⚠️ FoundationModels unavailable for Kiro: {status.get('error_message', 'unknown error')}")
                 
                 config_dict = {
                     "vector_store": {
@@ -212,7 +212,7 @@ class KiroMemoryServer:
                     metadata["run_id"] = run_id
                     metadata["conversation_context"] = "multi_agent" if agent_id else "single_agent"
                 
-                # Apple Intelligence processing indicators
+                # FoundationModels processing indicators
                 metadata["processed_by"] = "apple_intelligence_foundation_models"
                 metadata["neural_engine_optimized"] = True
                 metadata["local_processing"] = True
@@ -361,7 +361,7 @@ class KiroMemoryServer:
                     metadata["run_id"] = run_id
                     metadata["conversation_context"] = "multi_agent" if agent_id else "single_agent"
                 
-                # Apple Intelligence processing indicators
+                # FoundationModels processing indicators
                 metadata["processed_by"] = "apple_intelligence_foundation_models"
                 metadata["neural_engine_optimized"] = True
                 metadata["local_processing"] = True
@@ -428,7 +428,7 @@ class KiroMemoryServer:
                     metadata["run_id"] = run_id
                     metadata["conversation_context"] = "multi_agent" if agent_id else "single_agent"
                 
-                # Apple Intelligence processing indicators
+                # FoundationModels processing indicators
                 metadata["processed_by"] = "apple_intelligence_foundation_models"
                 metadata["neural_engine_optimized"] = True
                 metadata["local_processing"] = True
@@ -463,7 +463,7 @@ class KiroMemoryServer:
             memory_types: Optional[List[str]] = None,
             limit: int = 50
         ) -> List[TextContent]:
-            """Get project memories specific to an agent with Apple Intelligence processing"""
+            """Get project memories specific to an agent with FoundationModels processing"""
             try:
                 if not self.current_project:
                     return [TextContent(
@@ -522,7 +522,7 @@ class KiroMemoryServer:
             run_id: str,
             limit: int = 20
         ) -> List[TextContent]:
-            """Get shared collaboration context for the current project using Apple Intelligence"""
+            """Get shared collaboration context for the current project using FoundationModels"""
             try:
                 if not self.current_project:
                     return [TextContent(
@@ -581,7 +581,7 @@ class KiroMemoryServer:
             time_range_hours: int = 24,
             min_interactions: int = 2
         ) -> List[TextContent]:
-            """Analyze agent interaction patterns in the current project using Apple Intelligence"""
+            """Analyze agent interaction patterns in the current project using FoundationModels"""
             try:
                 if not self.current_project:
                     return [TextContent(

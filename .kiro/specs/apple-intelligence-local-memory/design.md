@@ -2,7 +2,7 @@
 
 ## Overview
 
-This design implements Apple Intelligence Foundation Models integration with the existing mem0 memory system. The current system uses Ollama (llama3.2:3b + nomic-embed-text) but needs to be replaced with Apple Intelligence providers that leverage macOS Foundation Models framework for completely local, on-device processing.
+This design implements FoundationModels Foundation Models integration with the existing mem0 memory system. The current system uses Ollama (llama3.2:3b + nomic-embed-text) but needs to be replaced with FoundationModels providers that leverage macOS Foundation Models framework for completely local, on-device processing.
 
 ## Architecture
 
@@ -24,21 +24,21 @@ Claude Desktop/Kiro IDE
 Node.js MCP Server (server.js)
     ↓ Python subprocess
 Python Memory Operations (memory_operations.py)
-    ↓ mem0 with Apple Intelligence
-Apple Intelligence Foundation Models (macOS)
+    ↓ mem0 with FoundationModels
+FoundationModels Foundation Models (macOS)
     ↓ Neural Engine
 Local Infrastructure (Qdrant + PostgreSQL + Redis)
 ```
 
 ## Components and Interfaces
 
-### 1. Apple Intelligence LLM Provider
+### 1. FoundationModels LLM Provider
 
 **File**: `mem0/llms/apple_intelligence.py`
 
 ```python
 class AppleIntelligenceLLM(LLMBase):
-    """Apple Intelligence LLM provider using Foundation Models framework"""
+    """FoundationModels LLM provider using Foundation Models framework"""
     
     def __init__(self, config: Dict[str, Any] = None):
         super().__init__(config)
@@ -53,7 +53,7 @@ class AppleIntelligenceLLM(LLMBase):
         pass
     
     def generate_response(self, messages: List[Dict], **kwargs) -> str:
-        """Generate response using Apple Intelligence"""
+        """Generate response using FoundationModels"""
         # Call Foundation Models API for text generation
         pass
 ```
@@ -62,15 +62,15 @@ class AppleIntelligenceLLM(LLMBase):
 - Uses PyObjC to interface with macOS Foundation Models framework
 - Implements LLMBase interface for seamless mem0 integration
 - Handles memory extraction, fact retrieval, and memory updates
-- Provides fallback error handling when Apple Intelligence unavailable
+- Provides fallback error handling when FoundationModels unavailable
 
-### 2. Apple Intelligence Embedding Provider
+### 2. FoundationModels Embedding Provider
 
 **File**: `mem0/embeddings/apple_intelligence.py`
 
 ```python
 class AppleIntelligenceEmbedder(EmbeddingBase):
-    """Apple Intelligence embedder using Foundation Models"""
+    """FoundationModels embedder using Foundation Models"""
     
     def __init__(self, config: Dict[str, Any] = None):
         super().__init__(config)
@@ -79,7 +79,7 @@ class AppleIntelligenceEmbedder(EmbeddingBase):
         self._initialize_foundation_models()
     
     def embed(self, text: str, **kwargs) -> List[float]:
-        """Generate embeddings using Apple Intelligence"""
+        """Generate embeddings using FoundationModels"""
         # Call Foundation Models API for embedding generation
         pass
 ```
@@ -104,7 +104,7 @@ class FoundationModelsInterface:
     
     def _check_availability(self):
         """Check if Foundation Models framework is available"""
-        # Verify macOS version and Apple Intelligence availability
+        # Verify macOS version and FoundationModels availability
         pass
     
     def generate_text(self, prompt: str, **kwargs) -> str:
@@ -117,7 +117,7 @@ class FoundationModelsInterface:
 ```
 
 **Key Features**:
-- Detects macOS version and Apple Intelligence availability
+- Detects macOS version and FoundationModels availability
 - Provides unified interface to Foundation Models framework
 - Handles Neural Engine optimization
 - Manages privacy-first processing
@@ -128,7 +128,7 @@ class FoundationModelsInterface:
 
 ```python
 def initialize_memory():
-    """Initialize Mem0 memory with Apple Intelligence configuration"""
+    """Initialize Mem0 memory with FoundationModels configuration"""
     config = {
         "llm": {
             "provider": "apple_intelligence",
@@ -178,7 +178,7 @@ def add_memory_with_agent_context(params: Dict[str, Any]) -> Dict[str, Any]:
         "timestamp": datetime.now().isoformat()
     }
     
-    # Add memory with Apple Intelligence processing
+    # Add memory with FoundationModels processing
     result = memory.add(
         messages=params.get("messages"),
         user_id=params.get("user_id", "gabriel"),
@@ -190,11 +190,11 @@ def add_memory_with_agent_context(params: Dict[str, Any]) -> Dict[str, Any]:
 
 ## Data Models
 
-### Memory Item with Apple Intelligence Metadata
+### Memory Item with FoundationModels Metadata
 
 ```python
 class AppleIntelligenceMemoryItem(MemoryItem):
-    """Extended memory item with Apple Intelligence metadata"""
+    """Extended memory item with FoundationModels metadata"""
     
     apple_intelligence_processed: bool = True
     neural_engine_optimized: bool = True
@@ -208,7 +208,7 @@ class AppleIntelligenceMemoryItem(MemoryItem):
 
 ```python
 class AppleIntelligenceConfig:
-    """Configuration for Apple Intelligence integration"""
+    """Configuration for FoundationModels integration"""
     
     foundation_models_enabled: bool = True
     neural_engine_optimization: bool = True
@@ -221,11 +221,11 @@ class AppleIntelligenceConfig:
 
 ## Error Handling
 
-### Apple Intelligence Availability Check
+### FoundationModels Availability Check
 
 ```python
 def check_apple_intelligence_availability() -> bool:
-    """Check if Apple Intelligence is available on the system"""
+    """Check if FoundationModels is available on the system"""
     try:
         # Check macOS version (requires macOS 15.1+)
         import platform
@@ -248,7 +248,7 @@ def check_apple_intelligence_availability() -> bool:
 
 ```python
 class AppleIntelligenceFallback:
-    """Fallback strategy when Apple Intelligence is unavailable"""
+    """Fallback strategy when FoundationModels is unavailable"""
     
     def __init__(self, fallback_provider: str = "ollama"):
         self.fallback_provider = fallback_provider
@@ -258,7 +258,7 @@ class AppleIntelligenceFallback:
         if self.apple_intelligence_available:
             return "apple_intelligence"
         else:
-            logger.warning("Apple Intelligence unavailable, falling back to Ollama")
+            logger.warning("FoundationModels unavailable, falling back to Ollama")
             return self.fallback_provider
 ```
 
@@ -266,15 +266,15 @@ class AppleIntelligenceFallback:
 
 ### Unit Tests
 
-1. **Apple Intelligence Provider Tests**
+1. **FoundationModels Provider Tests**
    - Test LLM provider initialization
    - Test embedding provider initialization
    - Test Foundation Models interface
-   - Mock Apple Intelligence responses for CI/CD
+   - Mock FoundationModels responses for CI/CD
 
 2. **Integration Tests**
-   - Test mem0 with Apple Intelligence providers
-   - Test MCP server with Apple Intelligence
+   - Test mem0 with FoundationModels providers
+   - Test MCP server with FoundationModels
    - Test multi-agent memory sharing
    - Test fallback scenarios
 
@@ -287,7 +287,7 @@ class AppleIntelligenceFallback:
 ### Test Configuration
 
 ```python
-# Test configuration for Apple Intelligence
+# Test configuration for FoundationModels
 APPLE_INTELLIGENCE_TEST_CONFIG = {
     "llm": {
         "provider": "apple_intelligence",
@@ -306,14 +306,14 @@ APPLE_INTELLIGENCE_TEST_CONFIG = {
 }
 ```
 
-### Mock Apple Intelligence for Testing
+### Mock FoundationModels for Testing
 
 ```python
 class MockAppleIntelligence:
-    """Mock Apple Intelligence for testing environments"""
+    """Mock FoundationModels for testing environments"""
     
     def generate_text(self, prompt: str) -> str:
-        return f"Mock Apple Intelligence response for: {prompt[:50]}..."
+        return f"Mock FoundationModels response for: {prompt[:50]}..."
     
     def generate_embeddings(self, text: str) -> List[float]:
         # Generate deterministic embeddings for testing
@@ -322,24 +322,24 @@ class MockAppleIntelligence:
 
 ## Migration Strategy
 
-### Phase 1: Implement Apple Intelligence Providers
+### Phase 1: Implement FoundationModels Providers
 1. Create `mem0/llms/apple_intelligence.py`
 2. Create `mem0/embeddings/apple_intelligence.py`
 3. Create `mem0/utils/apple_intelligence.py`
 4. Update factory classes to register new providers
 
 ### Phase 2: Update MCP Servers
-1. Update `integrations/mcp/memory_operations.py` to use Apple Intelligence
+1. Update `integrations/mcp/memory_operations.py` to use FoundationModels
 2. Add multi-agent memory sharing capabilities
 3. Update configuration handling
 
 ### Phase 3: Chrome Extension Integration
 1. Update Chrome extension to connect to local MCP server
 2. Implement memory migration from managed service
-3. Test web memory operations with Apple Intelligence
+3. Test web memory operations with FoundationModels
 
 ### Phase 4: Testing and Optimization
-1. Comprehensive testing on macOS with Apple Intelligence
+1. Comprehensive testing on macOS with FoundationModels
 2. Performance optimization for Neural Engine
 3. Documentation and user guides
 
@@ -349,7 +349,7 @@ class MockAppleIntelligence:
 - Batch embedding generation when possible
 - Optimize prompt sizes for Foundation Models
 - Cache frequently accessed memories
-- Use Apple Intelligence's built-in optimization features
+- Use FoundationModels's built-in optimization features
 
 ### Memory Management
 - Efficient handling of large conversation contexts
@@ -364,7 +364,7 @@ class MockAppleIntelligence:
 ## Security and Privacy
 
 ### On-Device Processing
-- All Apple Intelligence operations occur locally
+- All FoundationModels operations occur locally
 - No external API calls for LLM or embedding operations
 - Data never leaves the device during processing
 

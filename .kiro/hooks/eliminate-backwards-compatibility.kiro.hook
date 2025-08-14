@@ -1,0 +1,22 @@
+{
+  "enabled": true,
+  "name": "Eliminate Backwards Compatibility",
+  "description": "Monitors changes to core library files and deprecated directories to identify and remove backwards compatibility code, legacy imports, deprecated functions, and outdated configuration patterns",
+  "version": "1",
+  "when": {
+    "type": "userTriggered",
+    "patterns": [
+      "mem0/**/*.py",
+      "archive/**/*",
+      "embedchain/**/*",
+      "pyproject.toml",
+      "*.py",
+      "integrations/**/*.py",
+      "tests/**/*.py"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Analyze the modified files for backwards compatibility code and deprecated features. Identify:\n\n1. Legacy import statements and deprecated modules\n2. Backwards compatibility shims and wrapper functions  \n3. Deprecated configuration options and environment variables\n4. Old API endpoints and method signatures\n5. Compatibility code for older Python versions\n6. References to archived/deprecated functionality\n7. Legacy test cases and outdated examples\n\nFor each identified item, provide:\n- Location (file and line if possible)\n- Description of the backwards compatibility code\n- Recommended removal action\n- Any breaking changes this would introduce\n- Migration path for users (if applicable)\n\nFocus on eliminating technical debt while maintaining core functionality. Prioritize removing code that supports EOL versions or deprecated patterns."
+  }
+}
