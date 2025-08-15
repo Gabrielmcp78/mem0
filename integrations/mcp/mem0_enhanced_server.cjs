@@ -24,6 +24,7 @@ const { spawn } = require('child_process');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const fs = require('fs');
+const { PythonExecutor } = require('./core/python_executor.js');
 
 /**
  * Enhanced Mem0 Server with FoundationModels Integration
@@ -45,6 +46,7 @@ class Mem0EnhancedServer {
     // Configuration with validation
     this.config = this.loadConfiguration();
     this.validateConfiguration();
+    this.pythonExecutor = new PythonExecutor(this.config);
     
     // Initialize default status (will be updated by async initialization)
     this.appleIntelligenceStatus = {
@@ -64,31 +66,15 @@ class Mem0EnhancedServer {
       pythonPath: process.env.PYTHONPATH || '/Volumes/Ready500/DEVELOPMENT/mem0',
       pythonExecutable: process.env.PYTHON_EXECUTABLE || 'python3',
       mem0ConfigPath: process.env.MEM0_CONFIG_PATH || './mem0_config.json',
-      appleIntelligenceEnabled: process.env.APPLE_INTELLIGENCE_ENABLED !== 'false',
+      appleIntelligenceEnabled: process.env.APPLE_INTELLIGENCE_ENABLED !== 'true',
       operationTimeout: parseInt(process.env.OPERATION_TIMEOUT) || 60000,
       maxRetries: parseInt(process.env.MAX_RETRIES) || 3,
-      logLevel: process.env.LOG_LEVEL || 'info'
+      logLevel: process.env.LOG_LEVEL || 'info',
+      ollamaFallbackEnabled: process.env.OLLAMA_FALLBACK_ENABLED !== 'false',
     };
 
     // Mem0 configuration for full stack operation
     config.memoryConfig = {
-      vector_store: {
-        provider: "qdrant",
-        config: {
-          collection_name: "gabriel_enhanced_memories_384",
-          host: "localhost",
-          port: 6333,
-          embedding_model_dims: 384
-        }
-      },
-      graph_store: {
-        provider: "neo4j",
-        config: {
-          url: "bolt://localhost:7687",
-          username: "neo4j",
-          password: process.env.NEO4J_PASSWORD || "password"
-        }
-      },
       llm: {
         provider: "apple_intelligence",
         config: {
@@ -149,6 +135,9 @@ class Mem0EnhancedServer {
 
       // Test FoundationModels availability
       await this.testAppleIntelligenceConnection();
+
+      // Test Ollama availability as fallback
+      await this.testOllamaConnection();
 
       // Initialize Agent Registry and Tool Call Manager
       await this.initializeAgentManagement();
@@ -280,16 +269,139 @@ except Exception as e:
 `;
 
     try {
-      const result = await this.executePythonScript(testScript, 'FoundationModels Connection Test', 10000);
+      const result = await this.pythonExecutor.executeScript(testScript, 'FoundationModels Connection Test', 30000);
       this.appleIntelligenceStatus = result;
       this.log('info', `FoundationModels status: ${result.status}`);
     } catch (error) {
-      this.appleIntelligenceStatus = { 
-        apple_intelligence: false, 
-        error: error.message, 
-        status: 'unavailable' 
+      // DO NOT FALLBACK - Fail fast if Apple Intelligence is not working
+      this.log('error', `FoundationModels connection FAILED: ${error.message}`);
+      throw new Error(`Apple Intelligence required but unavailable: ${error.message}`);
+    }
+  }
+
+  /**
+   * Test Ollama connection and available models
+   */
+  async testOllamaConnection() {
+    try {
+      const response = await fetch('http://localhost:11434/api/tags');
+      const data = await response.json();
+      
+      const models = data.models || [];
+      const preferredModels = ['llama3.2:3b', 'phi4:latest', 'llama3:latest'];
+      const availableModel = preferredModels.find(model => 
+        models.some(m => m.name === model)
+      ) || (models.length > 0 ? models[0].name : null);
+
+      if (availableModel) {
+        this.ollamaStatus = {
+          available: true,
+          status: 'connected',
+          model: availableModel,
+          total_models: models.length,
+          models: models.map(m => ({ name: m.name, size: m.size }))
+        };
+        this.log('info', `Ollama status: connected with ${availableModel}`);
+      } else {
+        throw new Error('No models available');
+      }
+    } catch (error) {
+      this.ollamaStatus = {
+        available: false,
+        status: 'unavailable',
+        error: error.message
       };
-      this.log('warn', `FoundationModels unavailable: ${error.message}`);
+      this.log('warn', `Ollama unavailable: ${error.message}`);
+    }
+  }
+
+  /**
+   * Generate text using Ollama as fallback
+   */
+  async generateWithOllama(prompt, maxTokens = 1000, temperature = 0.1) {
+    if (!this.ollamaStatus?.available) {
+      throw new Error('Ollama not available');
+    }
+
+    try {
+      const response = await fetch('http://localhost:11434/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: this.ollamaStatus.model,
+          prompt: prompt,
+          stream: false,
+          options: {
+            temperature: temperature,
+            num_predict: maxTokens
+          }
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.response) {
+        return data.response.trim();
+      } else {
+        throw new Error('No response from Ollama');
+      }
+    } catch (error) {
+      throw new Error(`Ollama generation failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Enhanced analyze memory content with Ollama fallback
+   */
+  async analyzeMemoryContentWithFallback(content, userId, operationId) {
+    // First try Apple Intelligence
+    try {
+      return await this.analyzeMemoryContent(content, userId, operationId);
+    } catch (appleError) {
+      this.log('error', `Apple Intelligence analysis failed. Full error: ${appleError.stack || appleError}`);
+
+      if (this.config.ollamaFallbackEnabled) {
+        this.log('warn', `Falling back to Ollama...`);
+        
+        // Fallback to Ollama
+        if (!this.ollamaStatus?.available) {
+          throw new Error(`Both Apple Intelligence and Ollama unavailable. Apple: ${appleError.message}, Ollama: not connected`);
+        }
+
+        try {
+          const prompt = `Analyze this memory content and return a JSON object with semantic analysis:\n\nContent: "${content}"\n\nReturn JSON with these fields:\n{\n  "entities": {"people": [], "places": [], "organizations": [], "concepts": [], "dates": [], "events": []},\n  "relationships": [],\n  "sentiment": {"polarity": 0.0, "intensity": 0.5, "primary_emotion": "neutral", "emotions": []},\n  "concepts": [],\n  "importance": {"score": 5, "reasoning": "Analyzed importance", "factors": []},\n  "temporal_context": {"time_references": [], "temporal_relationships": [], "temporal_significance": "medium"},\n  "intent": {"primary_intent": "remember", "secondary_intents": [], "retrieval_cues": []},\n  "metadata": {"confidence_score": 0.8, "processing_method": "ollama_llama3.2"},\n  "processing_timestamp": "${new Date().toISOString()}",\n  "apple_intelligence": false,\n  "ollama_model": "${this.ollamaStatus.model}"\n}\n\nRespond with ONLY the JSON object, no other text.`;
+
+          const response = await this.generateWithOllama(prompt, 1000, 0.1);
+          
+          try {
+            const analysis = JSON.parse(response);
+            this.log('info', `Memory analysis completed via Ollama fallback`);
+            return analysis;
+          } catch (parseError) {
+            // If JSON parsing fails, create a structured fallback
+            this.log('info', `Ollama completed analysis with structured fallback`);
+            return {
+              entities: { people: [], places: [], organizations: [], concepts: [], dates: [], events: [] },
+              relationships: [],
+              sentiment: { polarity: 0.0, intensity: 0.5, primary_emotion: "neutral", emotions: [] },
+              concepts: [],
+              importance: { score: 6, reasoning: "Ollama analysis", factors: ["ollama_processing"] },
+              temporal_context: { time_references: [], temporal_relationships: [], temporal_significance: "medium" },
+              intent: { primary_intent: "remember", secondary_intents: [], retrieval_cues: [] },
+              metadata: { confidence_score: 0.7, processing_method: "ollama_fallback_structured" },
+              processing_timestamp: new Date().toISOString(),
+              apple_intelligence: false,
+              ollama_model: this.ollamaStatus.model,
+              raw_response: response.substring(0, 200)
+            };
+          }
+        } catch (ollamaError) {
+          throw new Error(`Both AI systems failed. Apple: ${appleError.message}, Ollama: ${ollamaError.message}`);
+        }
+      } else {
+        this.log('error', 'Ollama fallback is disabled. Operation failed.');
+        throw new Error(`Apple Intelligence failed and Ollama fallback is disabled: ${appleError.message}`);
+      }
     }
   }
 
@@ -307,8 +419,8 @@ except Exception as e:
       
       this.log('info', `Starting enhanced memory addition: ${operationId}`);
       
-      // Step 1: Analyze memory content with FoundationModels
-      const analysis = await this.analyzeMemoryContent(content, userId, operationId);
+      // Step 1: Analyze memory content with FoundationModels + Ollama fallback
+      const analysis = await this.analyzeMemoryContentWithFallback(content, userId, operationId);
       
       // Step 2: Analyze context
       const contextAnalysis = await this.analyzeMemoryContext({ content, userId, operationId });
@@ -360,7 +472,7 @@ except Exception as e:
         processed_by: 'mem0_enhanced_orchestrator',
         architecture: {
           orchestrator: 'apple_intelligence_enhanced',
-          vector_storage: 'qdrant',
+          vector_storage: 'default',
           graph_relationships: 'neo4j',
           metadata: 'sqlite',
           context_understanding: 'active',
@@ -534,25 +646,12 @@ try:
                 analysis_result["processing_timestamp"] = datetime.now().isoformat()
                 analysis_result["apple_intelligence"] = True
                 print(json.dumps(analysis_result, ensure_ascii=False))
-            except json.JSONDecodeError:
-                                fallback_analysis = {
-                    "entities": {"people": [], "places": [], "organizations": [], "concepts": [], "dates": [], "events": []},
-                    "relationships": [],
-                    "sentiment": {"polarity": 0.0, "intensity": 0.5, "primary_emotion": "neutral", "emotions": []},
-                    "concepts": [],
-                    "importance": {"score": 5, "reasoning": "Standard importance", "factors": []},
-                    "temporal_context": {"time_references": [], "temporal_relationships": [], "temporal_significance": "medium"},
-                    "intent": {"primary_intent": "remember", "secondary_intents": [], "retrieval_cues": []},
-                    "metadata": {"confidence_score": 0.5, "processing_method": "apple_foundation_models_fallback"},
-                    "processing_timestamp": datetime.now().isoformat(),
-                    "apple_intelligence": True,
-                    "parsing_error": True
-                }
-                print(json.dumps(fallback_analysis, ensure_ascii=False))
+            except json.JSONDecodeError as e:
+                raise Exception(f"Foundation Models returned invalid JSON: {e}")
         else:
-            raise Exception("Foundation Models inference failed")
+            raise Exception("Foundation Models inference failed - no response")
     else:
-                from mem0 import Memory
+        from mem0 import Memory
         memory = Memory.from_config(${JSON.stringify(this.config.memoryConfig)})
         
         # Basic analysis using mem0's capabilities
@@ -583,22 +682,112 @@ except Exception as e:
 `;
 
     try {
-      const result = await this.executePythonScript(analysisScript, `Memory Content Analysis - ${operationId}`, 30000);
+      const result = await this.pythonExecutor.executeScript(analysisScript, `Memory Content Analysis - ${operationId}`, 30000);
       
       if (result.error) {
-        return this.getFallbackAnalysis(content);
+        throw new Error(`Apple Intelligence analysis failed: ${result.error}`);
       }
       
       return result;
     } catch (error) {
-      return this.getFallbackAnalysis(content);
+      throw new Error(`Memory analysis failed - Apple Intelligence required: ${error.message}`);
     }
   }
 
   /**
    * Analyze memory context
    */
-  async analyzeMemoryContext(params) {    const { content, userId, operationId: opId } = params;    const operationId = opId || uuidv4();    // Get existing context for user    const existingContext = this.contextHistory.get(userId) || [];        const contextScript = `import sysimport jsonfrom datetime import datetimesys.path.insert(0, '${this.config.pythonPath.replace(/'/g, "\\'")}')try:    content = """${content.replace(/"/g, '\"').replace(/\n/g, '\\n')}"""    user_id = "${userId}"    existing_context = ${JSON.stringify(existingContext.slice(-5))} # Last 5 contexts        # Context analysis using available intelligence    context_analysis = {        "temporal_context": {            "time_references": [],            "temporal_relationships": [],            "recency_indicators": [],            "temporal_significance": "medium"        },        "emotional_context": {            "primary_emotion": "neutral",            "emotion_intensity": 0.5,            "emotional_triggers": [],            "emotional_significance": "medium"        },        "conceptual_context": {            "primary_concepts": [],            "concept_relationships": [],            "abstraction_level": "concrete",            "conceptual_complexity": "medium"        },        "relational_context": {            "direct_references": [],            "semantic_connections": [],            "entity_connections": [],            "total_related": 0        },        "intent_context": {            "storage_intent": "remember",            "retrieval_intent": [],            "privacy_level": "personal",            "action_items": []        },        "importance_context": {            "personal_significance": "medium",            "professional_significance": "low",            "learning_significance": "medium",            "overall_importance": 5        },        "processing_timestamp": datetime.now().isoformat(),        "context_method": "enhanced_analysis"    }        print(json.dumps(context_analysis, ensure_ascii=False))        except Exception as e:    error_result = {        "error": str(e),        "operation": "analyze_memory_context",        "processing_timestamp": datetime.now().isoformat()    }    print(json.dumps(error_result, ensure_ascii=False))`;    try {      const result = await this.executePythonScript(contextScript, `Memory Context Analysis - ${operationId}`, 20000);            // Update context history      if (!result.error) {        this.updateContextHistory(userId, result);      }            return result.error ? this.getFallbackContextAnalysis() : result;    } catch (error) {      this.log('warn', `Context analysis error: ${error.message}`);      return this.getFallbackContextAnalysis();    }  }
+  /**
+   * Analyze memory context
+   */
+  async analyzeMemoryContext(params) {
+    const { content, userId, operationId: opId } = params;
+    const operationId = opId || uuidv4();
+    
+    // Get existing context for user
+    const existingContext = this.contextHistory.get(userId) || [];
+    
+    const contextScript = `
+import sys
+import json
+from datetime import datetime
+
+sys.path.insert(0, '${this.config.pythonPath.replace(/'/g, "\\'")}')
+
+try:
+    content = """${content.replace(/"/g, '\\"').replace(/\n/g, '\\n')}"""
+    user_id = "${userId}"
+    existing_context = ${JSON.stringify(existingContext.slice(-5))}  # Last 5 contexts
+    
+    # Context analysis using available intelligence
+    context_analysis = {
+        "temporal_context": {
+            "time_references": [],
+            "temporal_relationships": [],
+            "recency_indicators": [],
+            "temporal_significance": "medium"
+        },
+        "emotional_context": {
+            "primary_emotion": "neutral",
+            "emotion_intensity": 0.5,
+            "emotional_triggers": [],
+            "emotional_significance": "medium"
+        },
+        "conceptual_context": {
+            "primary_concepts": [],
+            "concept_relationships": [],
+            "abstraction_level": "concrete",
+            "conceptual_complexity": "medium"
+        },
+        "relational_context": {
+            "direct_references": [],
+            "semantic_connections": [],
+            "entity_connections": [],
+            "total_related": 0
+        },
+        "intent_context": {
+            "storage_intent": "remember",
+            "retrieval_intent": [],
+            "privacy_level": "personal",
+            "action_items": []
+        },
+        "importance_context": {
+            "personal_significance": "medium",
+            "professional_significance": "low",
+            "learning_significance": "medium",
+            "overall_importance": 5
+        },
+        "processing_timestamp": datetime.now().isoformat(),
+        "context_method": "enhanced_analysis"
+    }
+    
+    print(json.dumps(context_analysis, ensure_ascii=False))
+    
+except Exception as e:
+    error_result = {
+        "error": str(e),
+        "operation": "analyze_memory_context",
+        "processing_timestamp": datetime.now().isoformat()
+    }
+    print(json.dumps(error_result, ensure_ascii=False))
+`;
+
+    try {
+      const result = await this.pythonExecutor.executeScript(contextScript, `Memory Context Analysis - ${operationId}`, 20000);
+      
+      // Update context history
+      if (!result.error) {
+        this.updateContextHistory(userId, result);
+      } else {
+        throw new Error(`Apple Intelligence context analysis failed: ${result.error}`);
+      }
+      
+      return result;
+    } catch (error) {
+      this.log('error', `Context analysis failed: ${error.message}`);
+      throw new Error(`Context analysis failed - Apple Intelligence required: ${error.message}`);
+    }
+  }
 
   /**
    * Check for semantic duplicates
@@ -752,7 +941,7 @@ except Exception as e:
 `;
 
     try {
-      const result = await this.executePythonScript(searchScript, `Semantic Deduplication - ${operationId}`, 25000);
+      const result = await this.pythonExecutor.executeScript(searchScript, `Semantic Deduplication - ${operationId}`, 25000);
       return result;
     } catch (error) {
       this.log('warn', `Deduplication check failed: ${error.message}`);
@@ -861,7 +1050,7 @@ except Exception as e:
 `;
 
     try {
-      const result = await this.executePythonScript(storageScript, `Intelligent Storage - ${params.operationId}`, 30000);
+      const result = await this.pythonExecutor.execute(storageScript, `Intelligent Storage - ${params.operationId}`, 30000);
       return result;
     } catch (error) {
       this.log('error', `Storage execution failed: ${error.message}`);
@@ -916,7 +1105,7 @@ try:
         from FoundationModels import FMInferenceRequest, FMInferenceResponse, FMChatMessage
         foundation_models_available = True
     except ImportError:
-                from mem0 import Memory
+        from mem0 import Memory
         foundation_models_available = False
     
     if foundation_models_available:
@@ -934,7 +1123,7 @@ try:
             else:
                 raise Exception("Foundation Models inference failed")
     else:
-                memory_config = ${JSON.stringify(this.config.memoryConfig)}
+        memory_config = ${JSON.stringify(this.config.memoryConfig)}
         memory = Memory.from_config(memory_config)
         
         def generate_with_foundation_models(prompt):
@@ -1044,7 +1233,7 @@ except Exception as e:
 `;
 
     try {
-      const result = await this.executePythonScript(intentScript, `Search Intent Analysis - ${operationId}`, 30000);
+      const result = await this.pythonExecutor.execute(intentScript, `Search Intent Analysis - ${operationId}`, 30000);
       return result.error ? this.getFallbackSearchIntent(query) : result;
     } catch (error) {
       this.log('warn', `Search intent analysis failed: ${error.message}`);
@@ -1171,7 +1360,7 @@ try:
         from FoundationModels import FMInferenceRequest, FMInferenceResponse, FMChatMessage
         foundation_models_available = True
     except ImportError:
-                from mem0 import Memory
+        from mem0 import Memory
         foundation_models_available = False
     
     if foundation_models_available:
@@ -1189,7 +1378,7 @@ try:
             else:
                 raise Exception("Foundation Models inference failed")
     else:
-                memory_config = ${JSON.stringify(this.config.memoryConfig)}
+        memory_config = ${JSON.stringify(this.config.memoryConfig)}
         memory = Memory.from_config(memory_config)
         
         def generate_with_foundation_models(prompt):
@@ -1246,7 +1435,7 @@ try:
         print(json.dumps(ranked_results, ensure_ascii=False, indent=2))
         
     except json.JSONDecodeError:
-                fallback_results = []
+        fallback_results = []
         for i, result in enumerate(results):
             fallback_results.append({
                 "memory_id": result.get("id", f"result_{i}"),
@@ -1391,6 +1580,7 @@ except Exception as e:
       status: 'operational',
       server_version: '4.0.0',
       apple_intelligence_status: this.appleIntelligenceStatus,
+      ollama_status: this.ollamaStatus,
       storage_systems: {
         qdrant: 'connected',
         neo4j: 'connected',

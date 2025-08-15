@@ -175,8 +175,8 @@
               "type": "integer",
               "description": "Timeout for server initialization in milliseconds",
               "minimum": 5000,
-              "maximum": 30000,
-              "default": 10000
+              "maximum": 60000,
+              "default": 30000
             },
             "healthCheck": {
               "type": "object",

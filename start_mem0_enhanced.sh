@@ -79,6 +79,7 @@ export NEO4J_PASSWORD="${NEO4J_PASSWORD:-password}"
 export OPERATION_TIMEOUT="60000"
 export MAX_RETRIES="3"
 export LOG_LEVEL="info"
+export OLLAMA_FALLBACK_ENABLED=false
 
 echo "🔧 Environment configured:"
 echo "   PYTHONPATH: $PYTHONPATH"
